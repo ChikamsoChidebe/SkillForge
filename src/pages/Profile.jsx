@@ -604,23 +604,25 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-53 gap-1 text-xs">
-                {activityData.map((day, index) => {
-                  const intensity = Math.min(day.count, 4)
-                  return (
-                    <div
-                      key={day.date}
-                      className={`w-3 h-3 rounded-sm ${
-                        intensity === 0 ? 'bg-gray-200 dark:bg-gray-700' :
-                        intensity === 1 ? 'bg-green-200 dark:bg-green-800' :
-                        intensity === 2 ? 'bg-green-300 dark:bg-green-700' :
-                        intensity === 3 ? 'bg-green-400 dark:bg-green-600' :
-                        'bg-green-500 dark:bg-green-500'
-                      }`}
-                      title={`${day.date}: ${day.count} entries`}
-                    />
-                  )
-                })}
+              <div className="overflow-x-auto">
+                <div className="grid grid-cols-53 gap-1 text-xs min-w-[800px]">
+                  {activityData.map((day, index) => {
+                    const intensity = Math.min(day.count, 4)
+                    return (
+                      <div
+                        key={day.date}
+                        className={`w-3 h-3 rounded-sm ${
+                          intensity === 0 ? 'bg-gray-200 dark:bg-gray-700' :
+                          intensity === 1 ? 'bg-green-200 dark:bg-green-800' :
+                          intensity === 2 ? 'bg-green-300 dark:bg-green-700' :
+                          intensity === 3 ? 'bg-green-400 dark:bg-green-600' :
+                          'bg-green-500 dark:bg-green-500'
+                        }`}
+                        title={`${day.date}: ${day.count} entries`}
+                      />
+                    )
+                  })}
+                </div>
               </div>
             </Card>
           </motion.div>
