@@ -604,14 +604,14 @@ const Profile = () => {
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
-                <div className="grid grid-cols-53 gap-1 text-xs min-w-[800px]">
+              <div className="overflow-x-auto pb-2">
+                <div className="flex flex-wrap gap-1 justify-center" style={{ maxWidth: '100%' }}>
                   {activityData.map((day, index) => {
                     const intensity = Math.min(day.count, 4)
                     return (
                       <div
                         key={day.date}
-                        className={`w-3 h-3 rounded-sm ${
+                        className={`w-2.5 h-2.5 rounded-sm flex-shrink-0 ${
                           intensity === 0 ? 'bg-gray-200 dark:bg-gray-700' :
                           intensity === 1 ? 'bg-green-200 dark:bg-green-800' :
                           intensity === 2 ? 'bg-green-300 dark:bg-green-700' :
