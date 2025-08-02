@@ -163,7 +163,7 @@ const BadgeGallery = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Header */}
       <div className="text-center">
         <motion.div

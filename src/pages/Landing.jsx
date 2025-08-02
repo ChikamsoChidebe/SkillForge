@@ -13,9 +13,11 @@ import {
 import Button from '@/components/atoms/Button'
 import Card from '@/components/atoms/Card'
 import { useApp } from '@/contexts/AppContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 const Landing = () => {
   const { isConnected, connectWallet, isLoading } = useApp()
+  const { isAuthenticated } = useAuth()
 
   const features = [
     {
@@ -50,8 +52,15 @@ const Landing = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900" />
+      <section className="relative py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src="/blockchain.gif" 
+            alt="Blockchain Animation"
+            className="absolute inset-0 w-full h-full object-cover opacity-90"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-purple-900/70 to-slate-900/80" />
+        </div>
         
         <div className="relative container mx-auto px-4">
           <motion.div
@@ -62,17 +71,20 @@ const Landing = () => {
           >
             <h1 className="text-5xl md:text-7xl font-bold mb-6">
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-                DevChain
+                Prove Your Progress
+              </span>
+              <br />
+              <span className="text-white text-4xl md:text-5xl drop-shadow-lg">
+                on Hedera
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-              The future of learning verification. Record your development journey on the blockchain 
-              and earn verifiable badges that prove your skills to the world.
+            <p className="text-xl md:text-2xl text-white mb-8 leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
+              Build a verifiable learning portfolio that employers trust. Record milestones, earn NFT badges, showcase skills.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              {isConnected ? (
+              {isAuthenticated ? (
                 <Link to="/dashboard">
                   <Button size="lg" className="text-lg px-8 py-4">
                     Go to Dashboard
@@ -80,21 +92,25 @@ const Landing = () => {
                   </Button>
                 </Link>
               ) : (
-                <Button 
-                  size="lg" 
-                  className="text-lg px-8 py-4"
-                  onClick={connectWallet}
-                  loading={isLoading}
-                >
-                  Connect Wallet & Start
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
+                <Link to="/auth?mode=register">
+                  <Button 
+                    size="lg" 
+                    className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    Record Your First Entry
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+                </Link>
               )}
               
-              <Link to="/badges">
-                <Button variant="outline" size="lg" className="text-lg px-8 py-4">
+              <Link to={isAuthenticated ? "/badges" : "/auth?mode=login"}>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 hover:border-white/50 shadow-lg"
+                >
                   <Trophy className="w-5 h-5 mr-2" />
-                  View Badges
+                  {isAuthenticated ? 'View Badges' : 'Sign In'}
                 </Button>
               </Link>
             </div>
@@ -109,10 +125,10 @@ const Landing = () => {
                   transition={{ delay: 0.2 + index * 0.1 }}
                   className="text-center"
                 >
-                  <div className="text-3xl md:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-lg">
                     {stat.value}
                   </div>
-                  <div className="text-gray-600 dark:text-gray-300">
+                  <div className="text-gray-200 drop-shadow-md">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -123,7 +139,7 @@ const Landing = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white dark:bg-gray-900">
+      <section id="features" className="py-24 bg-white dark:bg-gray-900">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -171,7 +187,7 @@ const Landing = () => {
       </section>
 
       {/* How it Works */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-800">
+      <section id="how-it-works" className="py-24 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -252,7 +268,7 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+      <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -267,21 +283,33 @@ const Landing = () => {
               Join thousands of developers who are already building their verifiable learning portfolio on DevChain.
             </p>
             
-            {!isConnected && (
-              <Button 
-                size="lg" 
-                variant="secondary"
-                className="text-lg px-8 py-4"
-                onClick={connectWallet}
-                loading={isLoading}
-              >
-                Get Started Now
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
+            {isAuthenticated ? (
+              <Link to="/dashboard">
+                <Button 
+                  size="lg" 
+                  variant="secondary"
+                  className="text-lg px-8 py-4"
+                >
+                  Go to Dashboard
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth?mode=register">
+                <Button 
+                  size="lg" 
+                  variant="secondary"
+                  className="text-lg px-8 py-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
+                >
+                  Start Building Your Portfolio
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
             )}
           </motion.div>
         </div>
       </section>
+
     </div>
   )
 }

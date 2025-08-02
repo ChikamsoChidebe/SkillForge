@@ -23,9 +23,16 @@ class HederaClient {
     if (this.isInitialized) return
 
     try {
-      // For demo purposes - in production, use environment variables or secure wallet connection
-      this.operatorId = AccountId.fromString(import.meta.env.VITE_HEDERA_ACCOUNT_ID || '0.0.4707393')
-      this.operatorKey = PrivateKey.fromString(import.meta.env.VITE_HEDERA_PRIVATE_KEY || 'your-private-key-here')
+      const accountId = import.meta.env.VITE_HEDERA_ACCOUNT_ID
+      const privateKey = import.meta.env.VITE_HEDERA_PRIVATE_KEY
+      
+      // Check if environment variables are properly set
+      if (!accountId || !privateKey || privateKey === 'your-private-key-here') {
+        throw new Error('Hedera credentials not configured. Please set VITE_HEDERA_ACCOUNT_ID and VITE_HEDERA_PRIVATE_KEY in .env.local')
+      }
+      
+      this.operatorId = AccountId.fromString(accountId)
+      this.operatorKey = PrivateKey.fromString(privateKey)
       
       this.client = Client.forTestnet()
       this.client.setOperator(this.operatorId, this.operatorKey)
@@ -33,14 +40,14 @@ class HederaClient {
       this.isInitialized = true
     } catch (error) {
       console.error('Failed to initialize Hedera client:', error)
-      throw new Error('Hedera client initialization failed')
+      throw new Error(`Hedera client initialization failed: ${error.message}`)
     }
   }
 
   async connectWallet() {
     await this.initialize()
     
-    // Simulate wallet connection - in production, integrate with HashPack or other wallets
+    // Real Hedera connection
     return {
       accountId: this.operatorId.toString(),
       publicKey: this.operatorKey.publicKey.toString(),
@@ -91,30 +98,35 @@ class HederaClient {
     await this.initialize()
     
     try {
-      // In a real implementation, you would query the Hedera network for transactions
-      // For demo purposes, return mock data
-      const mockEntries = [
-        {
-          id: '1',
-          title: 'React Hooks Deep Dive',
-          description: 'Learned about useState, useEffect, and custom hooks',
-          date: '2024-01-15',
-          category: 'tutorial',
-          txHash: '0.0.4707393@1705123456.123456789',
-          timestamp: 1705123456789
-        },
-        {
-          id: '2',
-          title: 'Hedera SDK Integration',
-          description: 'Successfully integrated Hedera SDK for blockchain transactions',
-          date: '2024-01-14',
-          category: 'project',
-          txHash: '0.0.4707393@1705037056.123456789',
-          timestamp: 1705037056789
-        }
-      ]
+      // Query Hedera Mirror Node for account transactions
+      const response = await fetch(
+        `https://testnet.mirrornode.hedera.com/api/v1/transactions?account.id=${this.operatorId}&limit=${limit}&order=desc`
+      )
+      const data = await response.json()
       
-      return mockEntries.slice(0, limit)
+      // Filter transactions with memos (learning entries)
+      const entries = data.transactions
+        .filter(tx => tx.memo_base64)
+        .map((tx, index) => {
+          try {
+            const memo = atob(tx.memo_base64)
+            const [timestamp, category, title, description] = memo.split('|')
+            return {
+              id: tx.transaction_id,
+              title: title || 'Learning Entry',
+              description: description || 'No description',
+              date: timestamp ? new Date(timestamp).toISOString().split('T')[0] : new Date(tx.consensus_timestamp * 1000).toISOString().split('T')[0],
+              category: category || 'tutorial',
+              txHash: tx.transaction_id,
+              timestamp: tx.consensus_timestamp * 1000
+            }
+          } catch (error) {
+            return null
+          }
+        })
+        .filter(Boolean)
+      
+      return entries
     } catch (error) {
       console.error('Failed to get entries:', error)
       return []
@@ -178,15 +190,17 @@ class HederaClient {
   }
 
   async getBadges() {
-    // Mock badge data for demo
-    return [
+    const entries = await this.getEntries()
+    const entryCount = entries.length
+    
+    const badges = [
       {
         id: '1',
         name: 'First Steps',
         description: 'Completed your first learning entry',
         milestone: 1,
-        unlocked: true,
-        unlockedAt: '2024-01-15',
+        unlocked: entryCount >= 1,
+        unlockedAt: entryCount >= 1 ? entries[entries.length - 1]?.date : null,
         icon: '🎯',
         rarity: 'common'
       },
@@ -195,7 +209,8 @@ class HederaClient {
         name: 'Learning Streak',
         description: 'Logged 5 learning milestones',
         milestone: 5,
-        unlocked: false,
+        unlocked: entryCount >= 5,
+        unlockedAt: entryCount >= 5 ? entries[entries.length - 5]?.date : null,
         icon: '🔥',
         rarity: 'uncommon'
       },
@@ -204,7 +219,8 @@ class HederaClient {
         name: 'Knowledge Builder',
         description: 'Reached 10 learning entries',
         milestone: 10,
-        unlocked: false,
+        unlocked: entryCount >= 10,
+        unlockedAt: entryCount >= 10 ? entries[entries.length - 10]?.date : null,
         icon: '🏗️',
         rarity: 'rare'
       },
@@ -213,11 +229,14 @@ class HederaClient {
         name: 'Learning Master',
         description: 'Achieved 20 learning milestones',
         milestone: 20,
-        unlocked: false,
+        unlocked: entryCount >= 20,
+        unlockedAt: entryCount >= 20 ? entries[entries.length - 20]?.date : null,
         icon: '👑',
         rarity: 'legendary'
       }
     ]
+    
+    return badges
   }
 
   getHashScanUrl(txHash) {

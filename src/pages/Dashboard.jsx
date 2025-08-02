@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Plus, 
@@ -22,9 +22,9 @@ import Card from '@/components/atoms/Card'
 import Badge from '@/components/atoms/Badge'
 import TutorialCard from '@/components/molecules/TutorialCard'
 import Modal from '@/components/molecules/Modal'
-import { useEntries } from '@/hooks/useEntries'
-import { useBadges, useCheckBadgeEligibility } from '@/hooks/useBadges'
 import { useApp } from '@/contexts/AppContext'
+import { useAuth } from '@/contexts/AuthContext'
+import { userService } from '@/api/userService'
 import LogEntryForm from '@/components/organisms/LogEntryForm'
 
 const Dashboard = () => {
@@ -35,10 +35,33 @@ const Dashboard = () => {
   const [showNewEntryModal, setShowNewEntryModal] = useState(false)
   const [showFilters, setShowFilters] = useState(false)
 
-  const { isConnected } = useApp()
-  const { data: entries = [], isLoading: entriesLoading, error: entriesError } = useEntries()
-  const { data: badges = [] } = useBadges()
-  const { eligibleBadges, entryCount } = useCheckBadgeEligibility()
+  const { user } = useAuth()
+  const [entries, setEntries] = useState([])
+  const [badges, setBadges] = useState([])
+  const [dataLoading, setDataLoading] = useState(true)
+  const [dataError, setDataError] = useState(null)
+  
+  const loadUserData = async () => {
+    try {
+      setDataLoading(true)
+      const [userEntries, userBadges] = await Promise.all([
+        userService.getUserEntries(user.id),
+        userService.getUserBadges(user.id)
+      ])
+      setEntries(userEntries)
+      setBadges(userBadges)
+    } catch (err) {
+      setDataError(err)
+    } finally {
+      setDataLoading(false)
+    }
+  }
+  
+  useEffect(() => {
+    if (user) loadUserData()
+  }, [user])
+  
+  const eligibleBadges = badges.filter(badge => !badge.unlocked)
 
   // Filter and sort entries
   const filteredEntries = useMemo(() => {
@@ -121,25 +144,16 @@ const Dashboard = () => {
 
   const categories = ['all', 'tutorial', 'project', 'course', 'workshop', 'certification']
 
-  if (!isConnected) {
+  if (dataLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Card className="text-center max-w-md">
-          <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold mb-2">Connect Your Wallet</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Connect your Hedera wallet to start tracking your learning journey.
-          </p>
-          <Button onClick={() => window.location.reload()}>
-            Refresh Page
-          </Button>
-        </Card>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 py-8 space-y-8">
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
@@ -359,7 +373,7 @@ const Dashboard = () => {
       </div>
 
       {/* Entries Grid */}
-      {entriesLoading ? (
+      {dataLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[...Array(6)].map((_, i) => (
             <Card key={i} className="animate-pulse">
@@ -370,7 +384,7 @@ const Dashboard = () => {
             </Card>
           ))}
         </div>
-      ) : entriesError ? (
+      ) : dataError ? (
         <Card className="text-center py-12">
           <div className="text-red-500 mb-4">
             <BarChart3 className="w-16 h-16 mx-auto" />

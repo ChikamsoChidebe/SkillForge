@@ -1,0 +1,9 @@
+@echo off
+echo Installing Groq SDK...
+npm install groq-sdk
+echo.
+echo Clearing Vite cache...
+rmdir /s /q node_modules\.vite 2>nul
+echo.
+echo Restarting dev server...
+npm run dev

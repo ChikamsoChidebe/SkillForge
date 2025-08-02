@@ -22,17 +22,23 @@ const Card = ({
     className
   )
 
-  const MotionDiv = hover ? motion.div : 'div'
+  if (hover) {
+    return (
+      <motion.div
+        className={classes}
+        whileHover={{ y: -4, scale: 1.02 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        {...props}
+      >
+        {children}
+      </motion.div>
+    )
+  }
 
   return (
-    <MotionDiv
-      className={classes}
-      whileHover={hover ? { y: -4, scale: 1.02 } : undefined}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      {...props}
-    >
+    <div className={classes} {...props}>
       {children}
-    </MotionDiv>
+    </div>
   )
 }
 

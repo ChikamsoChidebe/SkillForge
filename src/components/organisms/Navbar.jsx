@@ -11,29 +11,43 @@ import {
   Sun, 
   Moon,
   Wallet,
-  LogOut
+  LogOut,
+  Brain
 } from 'lucide-react'
 import Button from '@/components/atoms/Button'
 import { useApp } from '@/contexts/AppContext'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useAuth } from '@/contexts/AuthContext'
+
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { isConnected, user, connectWallet, disconnectWallet, isLoading } = useApp()
+
+  const { isConnected, connectWallet, disconnectWallet, isLoading } = useApp()
   const { theme, toggleTheme } = useTheme()
+  const { user, logout, isAuthenticated } = useAuth()
   const location = useLocation()
 
-  const navigation = [
+  const publicNavigation = [
+    { name: 'Home', href: '/', icon: Home },
+    { name: 'Features', href: '#features', icon: BookOpen },
+    { name: 'How It Works', href: '#how-it-works', icon: Trophy },
+  ]
+  
+  const privateNavigation = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Dashboard', href: '/dashboard', icon: BookOpen },
     { name: 'Badges', href: '/badges', icon: Trophy },
+    { name: 'AI Coach', href: '/ai-coach', icon: Brain },
     { name: 'Profile', href: '/profile', icon: User },
   ]
+  
+  const navigation = isAuthenticated ? privateNavigation : publicNavigation
 
   const isActive = (path) => location.pathname === path
 
   return (
-    <nav className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+    <nav className="sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 transition-all duration-200">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -54,6 +68,20 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-1">
             {navigation.map((item) => {
               const Icon = item.icon
+              
+              if (item.href.startsWith('#')) {
+                return (
+                  <a
+                    key={item.name}
+                    href={item.href}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{item.name}</span>
+                  </a>
+                )
+              }
+              
               return (
                 <Link
                   key={item.name}
@@ -87,35 +115,41 @@ const Navbar = () => {
               )}
             </Button>
 
-            {/* Wallet connection */}
-            {isConnected ? (
+            {/* Authentication */}
+            {isAuthenticated ? (
               <div className="flex items-center space-x-2">
                 <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-green-100 dark:bg-green-900 rounded-lg">
-                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                  <img 
+                    src={user.avatar} 
+                    alt={user.name}
+                    className="w-6 h-6 rounded-full"
+                  />
                   <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                    {user?.accountId?.slice(0, 8)}...
+                    {user.username}
                   </span>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={disconnectWallet}
+                  onClick={logout}
                   className="hidden sm:flex"
                 >
                   <LogOut className="w-4 h-4" />
                 </Button>
               </div>
             ) : (
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={connectWallet}
-                loading={isLoading}
-                className="hidden sm:flex"
-              >
-                <Wallet className="w-4 h-4 mr-2" />
-                Connect Wallet
-              </Button>
+              <div className="hidden sm:flex items-center space-x-2">
+                <Link to="/auth?mode=login">
+                  <Button variant="ghost" size="sm">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/auth?mode=register">
+                  <Button variant="primary" size="sm">
+                    Get Started
+                  </Button>
+                </Link>
+              </div>
             )}
 
             {/* Mobile menu button */}
@@ -145,6 +179,21 @@ const Navbar = () => {
             <div className="space-y-2">
               {navigation.map((item) => {
                 const Icon = item.icon
+                
+                if (item.href.startsWith('#')) {
+                  return (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{item.name}</span>
+                    </a>
+                  )
+                }
+                
                 return (
                   <Link
                     key={item.name}
@@ -182,33 +231,49 @@ const Navbar = () => {
                   )}
                 </Button>
 
-                {isConnected ? (
+                {isAuthenticated ? (
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={disconnectWallet}
+                    onClick={logout}
                     className="w-full justify-start mt-2"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
-                    Disconnect
+                    Sign Out
                   </Button>
                 ) : (
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={connectWallet}
-                    loading={isLoading}
-                    className="w-full justify-start mt-2"
-                  >
-                    <Wallet className="w-4 h-4 mr-2" />
-                    Connect Wallet
-                  </Button>
+                  <div className="space-y-2 mt-2">
+                    <Link to="/auth?mode=login" className="block">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="w-full justify-start"
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/auth?mode=register" className="block">
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="w-full justify-start"
+                      >
+                        <Wallet className="w-4 h-4 mr-2" />
+                        Get Started
+                      </Button>
+                    </Link>
+                  </div>
                 )}
               </div>
             </div>
           </motion.div>
         )}
       </div>
+      
+
     </nav>
   )
 }
