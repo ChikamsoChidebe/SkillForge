@@ -453,11 +453,12 @@ const Dashboard = () => {
         size="lg"
       >
         <LogEntryForm 
-          onSuccess={() => {
+          onSuccess={async () => {
             setShowNewEntryModal(false)
-            loadUserData() // Reload data after new entry
-            // Force re-render
-            window.location.reload()
+            // Wait a moment for Supabase to sync
+            setTimeout(async () => {
+              await loadUserData()
+            }, 1000)
           }} 
         />
       </Modal>
