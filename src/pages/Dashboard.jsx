@@ -46,9 +46,10 @@ const Dashboard = () => {
     try {
       setDataLoading(true)
       
-      // Use reliable sync to get entries (cloud-first)
-      const { reliableSync } = await import('@/api/reliableSync')
-      const userEntries = await reliableSync.getUserEntries(user.id)
+      // Load entries from Supabase directly
+      console.log('🔍 Loading entries for user:', user.id)
+      const userEntries = await supabaseService.getUserEntries(user.id)
+      console.log('✅ Loaded', userEntries.length, 'entries from Supabase:', userEntries)
       setEntries(userEntries)
       
       // Generate badges based on entry count
