@@ -16,9 +16,12 @@ export const supabaseService = {
   // Create user
   async createUser(userData) {
     try {
+      // Remove createdAt to avoid cache issues - Supabase will auto-generate it
+      const { createdAt, ...userDataWithoutTimestamp } = userData
+      
       const { data, error } = await supabase
         .from('users')
-        .insert([userData])
+        .insert([userDataWithoutTimestamp])
         .select()
       
       if (error) throw error
@@ -66,9 +69,12 @@ export const supabaseService = {
   // Create entry
   async createEntry(entryData) {
     try {
+      // Remove createdAt to avoid cache issues - Supabase will auto-generate it
+      const { createdAt, ...entryDataWithoutTimestamp } = entryData
+      
       const { data, error } = await supabase
         .from('entries')
-        .insert([entryData])
+        .insert([entryDataWithoutTimestamp])
         .select()
       
       if (error) throw error
