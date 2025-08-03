@@ -16,16 +16,23 @@ export const supabaseService = {
   // Create user
   async createUser(userData) {
     try {
-      // Remove createdAt to avoid cache issues - Supabase will auto-generate it
-      const { createdAt, ...userDataWithoutTimestamp } = userData
+      // Minimal insert to bypass cache issues - only send essential fields
+      const minimalUser = {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        password: userData.password
+      }
       
       const { data, error } = await supabase
         .from('users')
-        .insert([userDataWithoutTimestamp])
+        .insert([minimalUser])
         .select()
       
       if (error) throw error
-      return data[0]
+      
+      // Return full user data (Supabase will have defaults)
+      return { ...userData, ...data[0] }
     } catch (error) {
       console.error('Supabase create user error:', error)
       throw error
