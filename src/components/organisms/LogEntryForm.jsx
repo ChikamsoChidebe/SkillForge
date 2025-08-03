@@ -44,23 +44,24 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         date: new Date(formData.date).toISOString()
       }
 
-      // Save to localStorage
-      const existingEntries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
-      existingEntries.push(entryData)
-      localStorage.setItem('skillforge_entries', JSON.stringify(existingEntries))
+      // Save with reliable sync (cloud-first)
+      const { reliableSync } = await import('@/api/reliableSync')
+      await reliableSync.createEntry(entryData)
       
       // Update user stats
-      const newTotalEntries = currentUser.totalEntries + 1
+      const newTotalEntries = (currentUser.totalEntries || 0) + 1
       const today = new Date().toDateString()
       const lastEntryDate = currentUser.lastEntryDate ? new Date(currentUser.lastEntryDate).toDateString() : null
       const newStreak = lastEntryDate === today ? currentUser.learningStreak : 
-                       lastEntryDate === new Date(Date.now() - 86400000).toDateString() ? currentUser.learningStreak + 1 : 1
+                       lastEntryDate === new Date(Date.now() - 86400000).toDateString() ? (currentUser.learningStreak || 0) + 1 : 1
       
-      updateUser({
+      const updatedUserData = {
         totalEntries: newTotalEntries,
         learningStreak: newStreak,
         lastEntryDate: new Date().toISOString()
-      })
+      }
+      
+      updateUser(updatedUserData)
 
       // Add to blockchain
       const blockchainResult = await addEntry(entryData)
@@ -77,16 +78,28 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
       const badgeUnlocked = checkBadgeUnlock(newTotalEntries)
       if (badgeUnlocked) {
         toast.success(`🏆 Badge Unlocked: ${badgeUnlocked}!`, { duration: 6000 })
-        updateUser({ totalBadges: currentUser.totalBadges + 1 })
+        
+        // Update user badge count
+        const newBadgeCount = (currentUser.totalBadges || 0) + 1
+        await updateUser({ totalBadges: newBadgeCount })
         
         // Send badge unlock email
         if (currentUser.email) {
-          realEmailService.sendBadgeUnlockedEmail(currentUser, {
-            name: badgeUnlocked,
-            description: getBadgeDescription(badgeUnlocked),
-            icon: getBadgeIcon(badgeUnlocked),
-            rarity: getBadgeRarity(badgeUnlocked)
-          })
+          console.log('🎉 Sending badge unlock email for:', badgeUnlocked)
+          try {
+            await realEmailService.sendBadgeUnlockedEmail({
+              ...currentUser,
+              totalEntries: newTotalEntries,
+              totalBadges: newBadgeCount
+            }, {
+              name: badgeUnlocked,
+              description: getBadgeDescription(badgeUnlocked),
+              icon: getBadgeIcon(badgeUnlocked),
+              rarity: getBadgeRarity(badgeUnlocked)
+            })
+          } catch (emailError) {
+            console.warn('Badge email failed:', emailError)
+          }
         }
       }
       

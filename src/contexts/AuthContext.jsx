@@ -174,10 +174,18 @@ export const AuthProvider = ({ children }) => {
     toast.success('Logged out successfully')
   }
 
-  const updateUser = (updates) => {
+  const updateUser = async (updates) => {
     const updatedUser = { ...user, ...updates }
     
-    // Update in users list
+    try {
+      // Try to update in cloud database first
+      await supabaseService.updateUser(user.id, updates)
+      console.log('✅ User updated in cloud database')
+    } catch (error) {
+      console.warn('⚠️ Cloud user update failed, using local only:', error.message)
+    }
+    
+    // Update in local users list
     const existingUsers = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
     const userIndex = existingUsers.findIndex(u => u.id === user.id)
     if (userIndex !== -1) {

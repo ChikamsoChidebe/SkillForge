@@ -86,16 +86,33 @@ export const supabaseService = {
   // Create entry
   async createEntry(entryData) {
     try {
-      // Remove createdAt to avoid cache issues - Supabase will auto-generate it
-      const { createdAt, ...entryDataWithoutTimestamp } = entryData
+      // Map camelCase to snake_case for database
+      const dbEntry = {
+        id: entryData.id,
+        userid: entryData.userId,  // Map userId to userid
+        title: entryData.title,
+        description: entryData.description,
+        category: entryData.category,
+        date: entryData.date,
+        author: entryData.author,
+        transaction_id: entryData.transactionId,
+        blockchain_status: entryData.blockchainStatus
+      }
       
       const { data, error } = await supabase
         .from('entries')
-        .insert([entryDataWithoutTimestamp])
+        .insert([dbEntry])
         .select()
       
       if (error) throw error
-      return data[0]
+      
+      // Map back to camelCase for frontend
+      const result = data[0]
+      return {
+        ...entryData,
+        id: result.id,
+        createdAt: result.created_at
+      }
     } catch (error) {
       console.error('Supabase create entry error:', error)
       throw error
@@ -108,8 +125,8 @@ export const supabaseService = {
       const { data, error } = await supabase
         .from('entries')
         .select('*')
-        .eq('userId', userId)
-        .order('createdAt', { ascending: false })
+        .eq('userid', userId)  // Fixed: database column is lowercase
+        .order('created_at', { ascending: false })  // Fixed: database column is snake_case
       
       if (error) throw error
       return data || []

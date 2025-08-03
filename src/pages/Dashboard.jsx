@@ -45,9 +45,9 @@ const Dashboard = () => {
     try {
       setDataLoading(true)
       
-      // Load entries from localStorage
-      const allEntries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
-      const userEntries = allEntries.filter(entry => entry.userId === user.id)
+      // Use reliable sync to get entries (cloud-first)
+      const { reliableSync } = await import('@/api/reliableSync')
+      const userEntries = await reliableSync.getUserEntries(user.id)
       setEntries(userEntries)
       
       // Generate badges based on entry count
