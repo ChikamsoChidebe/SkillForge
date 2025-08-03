@@ -121,7 +121,7 @@ const Navbar = () => {
                 <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-green-100 dark:bg-green-900 rounded-lg">
                   <img 
                     src={user.avatar} 
-                    alt={user.name}
+                    alt={user.fullName}
                     className="w-6 h-6 rounded-full"
                   />
                   <span className="text-sm font-medium text-green-700 dark:text-green-300">
@@ -139,16 +139,20 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="hidden sm:flex items-center space-x-2">
-                <Link to="/auth?mode=login">
-                  <Button variant="ghost" size="sm">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/auth?mode=register">
-                  <Button variant="primary" size="sm">
-                    Get Started
-                  </Button>
-                </Link>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => window.location.href = '/#auth'}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  variant="primary" 
+                  size="sm"
+                  onClick={() => window.location.href = '/#auth'}
+                >
+                  Get Started
+                </Button>
               </div>
             )}
 
@@ -243,28 +247,30 @@ const Navbar = () => {
                   </Button>
                 ) : (
                   <div className="space-y-2 mt-2">
-                    <Link to="/auth?mode=login" className="block">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full justify-start"
-                      >
-                        <User className="w-4 h-4 mr-2" />
-                        Sign In
-                      </Button>
-                    </Link>
-                    <Link to="/auth?mode=register" className="block">
-                      <Button
-                        variant="primary"
-                        size="sm"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="w-full justify-start"
-                      >
-                        <Wallet className="w-4 h-4 mr-2" />
-                        Get Started
-                      </Button>
-                    </Link>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        window.location.href = '/#auth'
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <User className="w-4 h-4 mr-2" />
+                      Sign In
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false)
+                        window.location.href = '/#auth'
+                      }}
+                      className="w-full justify-start"
+                    >
+                      <Wallet className="w-4 h-4 mr-2" />
+                      Get Started
+                    </Button>
                   </div>
                 )}
               </div>

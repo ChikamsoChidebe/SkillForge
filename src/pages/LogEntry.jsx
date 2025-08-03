@@ -1,13 +1,15 @@
 import { motion } from 'framer-motion'
-import { BookOpen, ArrowLeft, Lightbulb, Target, Clock } from 'lucide-react'
+import { BookOpen, ArrowLeft, Lightbulb, Target, Clock, Trophy, CheckCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import Button from '@/components/atoms/Button'
 import Card from '@/components/atoms/Card'
 import LogEntryForm from '@/components/organisms/LogEntryForm'
 import { useApp } from '@/contexts/AppContext'
+import { useAuth } from '@/contexts/AuthContext'
 
 const LogEntry = () => {
   const { isConnected } = useApp()
+  const { user } = useAuth()
 
   const tips = [
     {
@@ -78,6 +80,18 @@ const LogEntry = () => {
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Document your learning journey and create permanent, verifiable proof of your progress on the Hedera blockchain.
           </p>
+          {user && (
+            <div className="mt-4 flex items-center justify-center space-x-6 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center space-x-2">
+                <Trophy className="w-4 h-4 text-yellow-500" />
+                <span>Entry #{user.totalEntries + 1}</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                <span>{user.learningStreak} day streak</span>
+              </div>
+            </div>
+          )}
         </div>
       </motion.div>
 
@@ -85,7 +99,10 @@ const LogEntry = () => {
         {/* Main Form */}
         <div className="lg:col-span-2">
           <Card>
-            <LogEntryForm onSuccess={() => window.location.href = '/dashboard'} />
+            <LogEntryForm 
+              onSuccess={() => window.location.href = '/dashboard'}
+              user={user}
+            />
           </Card>
         </div>
 

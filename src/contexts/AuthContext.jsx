@@ -1,93 +1,152 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react'
+import { toast } from 'react-hot-toast'
 
-const AuthContext = createContext();
+const AuthContext = createContext()
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = useContext(AuthContext)
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error('useAuth must be used within an AuthProvider')
   }
-  return context;
-};
+  return context
+}
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
+  // Load user from localStorage on mount
   useEffect(() => {
-    // Check for existing user session
-    const savedUser = localStorage.getItem('devchain_user');
+    const savedUser = localStorage.getItem('devchain_user')
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      try {
+        const userData = JSON.parse(savedUser)
+        setUser(userData)
+        setIsAuthenticated(true)
+      } catch (error) {
+        console.error('Error loading user data:', error)
+        localStorage.removeItem('devchain_user')
+      }
     }
-    setIsLoading(false);
-  }, []);
+    setIsLoading(false)
+  }, [])
 
   const register = async (userData) => {
-    const newUser = {
-      id: Date.now().toString(),
-      username: userData.username,
-      email: userData.email,
-      name: userData.name,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
-      joinedAt: new Date().toISOString(),
-      totalEntries: 0,
-      badges: [],
-      streak: 0
-    };
-    
-    setUser(newUser);
-    localStorage.setItem('devchain_user', JSON.stringify(newUser));
-    return newUser;
-  };
+    try {
+      setIsLoading(true)
+      
+      // Check if user already exists
+      const existingUsers = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const userExists = existingUsers.find(u => 
+        u.email === userData.email || u.username === userData.username
+      )
+      
+      if (userExists) {
+        throw new Error('User already exists with this email or username')
+      }
+
+      // Create new user
+      const newUser = {
+        id: Date.now().toString(),
+        username: userData.username,
+        email: userData.email,
+        fullName: userData.fullName,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
+        createdAt: new Date().toISOString(),
+        totalEntries: 0,
+        totalBadges: 0,
+        learningStreak: 0,
+        lastEntryDate: null,
+        preferences: {
+          theme: 'system',
+          notifications: true,
+          publicProfile: true
+        }
+      }
+
+      // Save to users list
+      existingUsers.push(newUser)
+      localStorage.setItem('devchain_users', JSON.stringify(existingUsers))
+      
+      // Set as current user
+      localStorage.setItem('devchain_user', JSON.stringify(newUser))
+      setUser(newUser)
+      setIsAuthenticated(true)
+      
+      toast.success('Account created successfully!')
+      return { success: true, user: newUser }
+    } catch (error) {
+      toast.error(error.message)
+      return { success: false, error: error.message }
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const login = async (credentials) => {
-    // In a real app, this would validate against a backend
-    const users = JSON.parse(localStorage.getItem('devchain_users') || '[]');
-    const user = users.find(u => 
-      u.email === credentials.email || u.username === credentials.username
-    );
-    
-    if (user) {
-      setUser(user);
-      localStorage.setItem('devchain_user', JSON.stringify(user));
-      return user;
+    try {
+      setIsLoading(true)
+      
+      const existingUsers = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const user = existingUsers.find(u => 
+        (u.email === credentials.identifier || u.username === credentials.identifier)
+      )
+      
+      if (!user) {
+        throw new Error('User not found')
+      }
+
+      localStorage.setItem('devchain_user', JSON.stringify(user))
+      setUser(user)
+      setIsAuthenticated(true)
+      
+      toast.success(`Welcome back, ${user.fullName}!`)
+      return { success: true, user }
+    } catch (error) {
+      toast.error(error.message)
+      return { success: false, error: error.message }
+    } finally {
+      setIsLoading(false)
     }
-    throw new Error('Invalid credentials');
-  };
+  }
 
   const logout = () => {
-    setUser(null);
-    localStorage.removeItem('devchain_user');
-  };
+    localStorage.removeItem('devchain_user')
+    setUser(null)
+    setIsAuthenticated(false)
+    toast.success('Logged out successfully')
+  }
 
   const updateUser = (updates) => {
-    const updatedUser = { ...user, ...updates };
-    setUser(updatedUser);
-    localStorage.setItem('devchain_user', JSON.stringify(updatedUser));
+    const updatedUser = { ...user, ...updates }
     
     // Update in users list
-    const users = JSON.parse(localStorage.getItem('devchain_users') || '[]');
-    const userIndex = users.findIndex(u => u.id === user.id);
-    if (userIndex >= 0) {
-      users[userIndex] = updatedUser;
-      localStorage.setItem('devchain_users', JSON.stringify(users));
+    const existingUsers = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+    const userIndex = existingUsers.findIndex(u => u.id === user.id)
+    if (userIndex !== -1) {
+      existingUsers[userIndex] = updatedUser
+      localStorage.setItem('devchain_users', JSON.stringify(existingUsers))
     }
-  };
+    
+    // Update current user
+    localStorage.setItem('devchain_user', JSON.stringify(updatedUser))
+    setUser(updatedUser)
+  }
 
   const value = {
     user,
+    isAuthenticated,
     isLoading,
     register,
     login,
     logout,
-    updateUser,
-    isAuthenticated: !!user
-  };
+    updateUser
+  }
 
   return (
     <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}

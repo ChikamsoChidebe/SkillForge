@@ -24,7 +24,7 @@ import TutorialCard from '@/components/molecules/TutorialCard'
 import Modal from '@/components/molecules/Modal'
 import { useApp } from '@/contexts/AppContext'
 import { useAuth } from '@/contexts/AuthContext'
-import { userService } from '@/api/userService'
+
 import LogEntryForm from '@/components/organisms/LogEntryForm'
 
 const Dashboard = () => {
@@ -44,12 +44,23 @@ const Dashboard = () => {
   const loadUserData = async () => {
     try {
       setDataLoading(true)
-      const [userEntries, userBadges] = await Promise.all([
-        userService.getUserEntries(user.id),
-        userService.getUserBadges(user.id)
-      ])
+      
+      // Load entries from localStorage
+      const allEntries = JSON.parse(localStorage.getItem('devchain_entries') || '[]')
+      const userEntries = allEntries.filter(entry => entry.userId === user.id)
       setEntries(userEntries)
-      setBadges(userBadges)
+      
+      // Generate badges based on entry count
+      const badgeThresholds = [
+        { threshold: 1, name: 'First Steps', unlocked: userEntries.length >= 1 },
+        { threshold: 5, name: 'Learning Streak', unlocked: userEntries.length >= 5 },
+        { threshold: 10, name: 'Knowledge Builder', unlocked: userEntries.length >= 10 },
+        { threshold: 20, name: 'Learning Master', unlocked: userEntries.length >= 20 },
+        { threshold: 50, name: 'Dedicated Learner', unlocked: userEntries.length >= 50 },
+        { threshold: 100, name: 'Learning Legend', unlocked: userEntries.length >= 100 }
+      ]
+      setBadges(badgeThresholds)
+      
     } catch (err) {
       setDataError(err)
     } finally {
@@ -440,7 +451,12 @@ const Dashboard = () => {
         title="Record Learning Milestone"
         size="lg"
       >
-        <LogEntryForm onSuccess={() => setShowNewEntryModal(false)} />
+        <LogEntryForm 
+          onSuccess={() => {
+            setShowNewEntryModal(false)
+            loadUserData() // Reload data after new entry
+          }} 
+        />
       </Modal>
     </div>
   )
