@@ -6,9 +6,17 @@ import LoadingSpinner from '@/components/organisms/LoadingSpinner'
 import { ShieldCheckIcon, UserPlusIcon } from '@heroicons/react/24/outline'
 
 const ProtectedRoute = ({ children, fallback }) => {
-  const { isAuthenticated, isLoading } = useAuth()
+  const { isAuthenticated, isLoading, user } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [authMode, setAuthMode] = useState('login')
+  
+  // Debug logging
+  console.log('🚪 ProtectedRoute check:', { 
+    isAuthenticated, 
+    isLoading, 
+    hasUser: !!user,
+    userId: user?.id 
+  })
 
   if (isLoading) {
     return (

@@ -22,15 +22,21 @@ export const AuthProvider = ({ children }) => {
   // Load user from localStorage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('skillforge_user')
+    console.log('🔍 Loading saved user:', !!savedUser)
+    
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser)
+        console.log('✅ User data loaded:', { id: userData.id, username: userData.username })
         setUser(userData)
         setIsAuthenticated(true)
       } catch (error) {
-        console.error('Error loading user data:', error)
+        console.error('❌ Error loading user data:', error)
         localStorage.removeItem('skillforge_user')
+        setIsAuthenticated(false)
       }
+    } else {
+      setIsAuthenticated(false)
     }
     setIsLoading(false)
   }, [])
@@ -122,44 +128,43 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       setIsLoading(true)
+      console.log('🔑 Attempting login for:', credentials.identifier)
       
-      // Try login with email first, then username
+      // Try login with reliable sync
       let user = await reliableSync.loginUser(credentials.identifier, credentials.password)
       
-      // If email login failed, try username login
       if (!user) {
+        console.log('⚠️ User not found, checking local storage')
         const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
         user = users.find(u => 
-          u.username === credentials.identifier && u.password === credentials.password
+          (u.email === credentials.identifier || u.username === credentials.identifier) && 
+          u.password === credentials.password
         )
-        
-        // Also try cloud with username
-        if (!user) {
-          try {
-            const cloudUsers = await supabaseService.getUserByEmail(credentials.identifier)
-            if (cloudUsers && cloudUsers.password === credentials.password) {
-              user = cloudUsers
-            }
-          } catch (e) {
-            // Continue with local fallback
-          }
-        }
       }
       
       if (!user) {
         throw new Error('Invalid email/username or password')
       }
 
-      // Sync user entries after login
-      setTimeout(() => reliableSync.getUserEntries(user.id), 1000)
+      console.log('✅ Login successful for user:', { id: user.id, username: user.username })
       
+      // Set authentication state immediately
       localStorage.setItem('skillforge_user', JSON.stringify(user))
       setUser(user)
       setIsAuthenticated(true)
       
-      toast.success(`Welcome back, ${user.fullName}!`)
+      // Sync user entries in background
+      setTimeout(() => {
+        reliableSync.getUserEntries(user.id).catch(err => 
+          console.log('Background sync failed:', err.message)
+        )
+      }, 1000)
+      
+      toast.success(`Welcome back, ${user.fullName || user.username}!`)
       return { success: true, user }
     } catch (error) {
+      console.error('❌ Login failed:', error.message)
+      setIsAuthenticated(false)
       toast.error(error.message)
       return { success: false, error: error.message }
     } finally {
