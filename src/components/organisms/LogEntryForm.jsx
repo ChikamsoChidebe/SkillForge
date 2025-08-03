@@ -71,7 +71,8 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         lastEntryDate: new Date().toISOString()
       }
       
-      updateUser(updatedUserData)
+      // Update user stats in Supabase and locally
+      await updateUser(updatedUserData)
 
       // Add to blockchain
       const blockchainResult = await addEntry(entryData)
@@ -89,7 +90,7 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
       if (badgeUnlocked) {
         toast.success(`🏆 Badge Unlocked: ${badgeUnlocked}!`, { duration: 6000 })
         
-        // Update user badge count
+        // Update user badge count in Supabase and locally
         const newBadgeCount = (currentUser.totalBadges || 0) + 1
         await updateUser({ totalBadges: newBadgeCount })
         

@@ -74,6 +74,10 @@ export const supabaseService = {
       if (updates.username) allowedUpdates.username = updates.username
       if (updates.email) allowedUpdates.email = updates.email
       if (updates.password) allowedUpdates.password = updates.password
+      if (updates.totalEntries !== undefined) allowedUpdates.total_entries = updates.totalEntries
+      if (updates.totalBadges !== undefined) allowedUpdates.total_badges = updates.totalBadges
+      if (updates.learningStreak !== undefined) allowedUpdates.learning_streak = updates.learningStreak
+      if (updates.lastEntryDate) allowedUpdates.last_entry_date = updates.lastEntryDate
       
       // Skip if no valid updates
       if (Object.keys(allowedUpdates).length === 0) {
@@ -92,6 +96,35 @@ export const supabaseService = {
     } catch (error) {
       console.error('Supabase update user error:', error)
       throw error
+    }
+  },
+
+  // Get full user profile with stats
+  async getUserProfile(userId) {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', userId)
+        .single()
+      
+      if (error && error.code !== 'PGRST116') throw error
+      
+      if (data) {
+        // Map database fields to frontend format
+        return {
+          ...data,
+          totalEntries: data.total_entries || 0,
+          totalBadges: data.total_badges || 0,
+          learningStreak: data.learning_streak || 0,
+          lastEntryDate: data.last_entry_date
+        }
+      }
+      
+      return null
+    } catch (error) {
+      console.error('Supabase get user profile error:', error)
+      return null
     }
   },
 

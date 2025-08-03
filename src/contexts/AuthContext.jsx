@@ -168,11 +168,19 @@ export const AuthProvider = ({ children }) => {
       setUser(user)
       setIsAuthenticated(true)
       
-      // Sync user entries in background
-      setTimeout(() => {
-        reliableSync.getUserEntries(user.id).catch(err => 
-          console.log('Background sync failed:', err.message)
-        )
+      // Sync user profile from Supabase in background
+      setTimeout(async () => {
+        try {
+          const profileData = await supabaseService.getUserProfile(user.id)
+          if (profileData) {
+            const mergedUser = { ...user, ...profileData }
+            localStorage.setItem('skillforge_user', JSON.stringify(mergedUser))
+            setUser(mergedUser)
+            console.log('✅ User profile synced from Supabase')
+          }
+        } catch (err) {
+          console.log('Background profile sync failed:', err.message)
+        }
       }, 1000)
       
       toast.success(`Welcome back, ${user.fullName || user.username}!`)
@@ -195,12 +203,28 @@ export const AuthProvider = ({ children }) => {
   }
 
   const updateUser = async (updates) => {
-    const { productionService } = await import('@/api/productionService')
-    const updatedUser = await productionService.updateUser(user.id, updates)
-    
-    if (updatedUser) {
+    try {
+      // Update user in Supabase
+      await supabaseService.updateUser(user.id, updates)
+      
+      // Update local user state
+      const updatedUser = { ...user, ...updates }
+      
+      // Update in users list
+      const existingUsers = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
+      const userIndex = existingUsers.findIndex(u => u.id === user.id)
+      if (userIndex !== -1) {
+        existingUsers[userIndex] = updatedUser
+        localStorage.setItem('skillforge_users', JSON.stringify(existingUsers))
+      }
+      
+      // Update current user
+      localStorage.setItem('skillforge_user', JSON.stringify(updatedUser))
       setUser(updatedUser)
-      console.log('✅ User updated successfully')
+      
+      console.log('✅ User updated successfully in Supabase and locally')
+    } catch (error) {
+      console.error('⚠️ Failed to update user:', error)
     }
   }
 

@@ -52,14 +52,20 @@ const Dashboard = () => {
       console.log('✅ Loaded', userEntries.length, 'entries from Supabase:', userEntries)
       setEntries(userEntries)
       
-      // Generate badges based on entry count
+      // Load user profile from Supabase for accurate stats
+      const userProfile = await supabaseService.getUserProfile(user.id)
+      const totalEntries = userProfile?.totalEntries || userEntries.length
+      
+      console.log('📊 User stats - Entries:', totalEntries, 'Badges:', userProfile?.totalBadges || 0)
+      
+      // Generate badges based on actual entry count from database
       const badgeThresholds = [
-        { threshold: 1, name: 'First Steps', unlocked: userEntries.length >= 1 },
-        { threshold: 5, name: 'Learning Streak', unlocked: userEntries.length >= 5 },
-        { threshold: 10, name: 'Knowledge Builder', unlocked: userEntries.length >= 10 },
-        { threshold: 20, name: 'Learning Master', unlocked: userEntries.length >= 20 },
-        { threshold: 50, name: 'Dedicated Learner', unlocked: userEntries.length >= 50 },
-        { threshold: 100, name: 'Learning Legend', unlocked: userEntries.length >= 100 }
+        { threshold: 1, name: 'First Steps', unlocked: totalEntries >= 1 },
+        { threshold: 5, name: 'Learning Streak', unlocked: totalEntries >= 5 },
+        { threshold: 10, name: 'Knowledge Builder', unlocked: totalEntries >= 10 },
+        { threshold: 20, name: 'Learning Master', unlocked: totalEntries >= 20 },
+        { threshold: 50, name: 'Dedicated Learner', unlocked: totalEntries >= 50 },
+        { threshold: 100, name: 'Learning Legend', unlocked: totalEntries >= 100 }
       ]
       setBadges(badgeThresholds)
       
