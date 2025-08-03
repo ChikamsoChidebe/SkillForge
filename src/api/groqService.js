@@ -121,7 +121,7 @@ class GroqService {
         messages: [
           {
             role: "system",
-            content: `You are DevChain AI, a helpful learning assistant for a blockchain-based learning platform. You help users with learning advice, skill development, and career guidance. Context: ${context}`
+            content: `You are SkillForge AI, a helpful learning assistant for a blockchain-based learning platform. You help users with learning advice, skill development, and career guidance. Context: ${context}`
           },
           {
             role: "user",
