@@ -127,7 +127,7 @@ const PageLoader = ({ children }) => {
               >
                 <h1 className="text-5xl font-bold text-white mb-2">
                   <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    DevChain
+                    SkillForge
                   </span>
                 </h1>
                 <p className="text-white/80 text-lg">

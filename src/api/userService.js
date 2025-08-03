@@ -1,4 +1,6 @@
 import { hederaClient } from './hederaClient'
+import { emailService } from './emailService'
+import { syncService } from './syncService'
 
 // Badge definitions for consistency across the app
 export const BADGE_DEFINITIONS = [
@@ -56,7 +58,7 @@ export const userService = {
   // Create new user account
   async createUser(userData) {
     try {
-      const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       const existingUser = users.find(u => u.username === userData.username || u.email === userData.email)
       
       if (existingUser) {
@@ -74,7 +76,12 @@ export const userService = {
       }
       
       users.push(newUser)
-      localStorage.setItem('devchain_users', JSON.stringify(users))
+      localStorage.setItem('skillforge_users', JSON.stringify(users))
+      
+      // Send welcome email
+      if (newUser.email) {
+        emailService.sendWelcomeEmail(newUser)
+      }
       
       return newUser
     } catch (error) {
@@ -86,7 +93,7 @@ export const userService = {
   // Authenticate user
   async authenticateUser(username, password) {
     try {
-      const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       const user = users.find(u => u.username === username && u.password === password)
       
       if (!user) {
@@ -103,7 +110,7 @@ export const userService = {
   // Update user data
   async updateUser(userId, updates) {
     try {
-      const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       const userIndex = users.findIndex(u => u.id === userId)
       
       if (userIndex === -1) {
@@ -111,7 +118,7 @@ export const userService = {
       }
       
       users[userIndex] = { ...users[userIndex], ...updates }
-      localStorage.setItem('devchain_users', JSON.stringify(users))
+      localStorage.setItem('skillforge_users', JSON.stringify(users))
       
       return users[userIndex]
     } catch (error) {
@@ -120,7 +127,7 @@ export const userService = {
     }
   },
 
-  // Record learning entry
+  // Record learning entry with cloud sync
   async recordEntry(userId, entryData) {
     try {
       const memo = JSON.stringify({
@@ -140,28 +147,13 @@ export const userService = {
         transactionId = `local_${Date.now()}`
       }
       
-      // Store locally with user association
-      const entries = JSON.parse(localStorage.getItem('devchain_entries') || '[]')
-      const newEntry = {
-        id: transactionId,
-        userId,
+      // Add entry with cloud sync
+      const newEntry = await syncService.addEntryWithSync(userId, {
         ...entryData,
-        timestamp: new Date().toISOString(),
+        id: transactionId,
         transactionId,
         date: entryData.date || new Date().toISOString()
-      }
-      
-      entries.unshift(newEntry)
-      localStorage.setItem('devchain_entries', JSON.stringify(entries))
-      
-      // Update user stats
-      const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
-      const userIndex = users.findIndex(u => u.id === userId)
-      if (userIndex !== -1) {
-        users[userIndex].totalEntries = (users[userIndex].totalEntries || 0) + 1
-        users[userIndex].lastEntryDate = new Date().toISOString()
-        localStorage.setItem('devchain_users', JSON.stringify(users))
-      }
+      })
       
       return newEntry
     } catch (error) {
@@ -170,21 +162,24 @@ export const userService = {
     }
   },
 
-  // Get user entries
+  // Get user entries with cloud sync
   async getUserEntries(userId) {
     try {
-      const entries = JSON.parse(localStorage.getItem('devchain_entries') || '[]')
-      return entries.filter(entry => entry.userId === userId).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      // Sync entries from cloud
+      const syncedEntries = await syncService.syncUserEntries(userId)
+      return syncedEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     } catch (error) {
       console.error('Failed to get user entries:', error)
-      return []
+      // Fallback to local
+      const entries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
+      return entries.filter(entry => entry.userId === userId).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     }
   },
 
   // Get all entries (for admin/demo purposes)
   async getAllEntries() {
     try {
-      const entries = JSON.parse(localStorage.getItem('devchain_entries') || '[]')
+      const entries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
       return entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
     } catch (error) {
       console.error('Failed to get all entries:', error)
@@ -195,16 +190,16 @@ export const userService = {
   // Delete entry
   async deleteEntry(userId, entryId) {
     try {
-      const entries = JSON.parse(localStorage.getItem('devchain_entries') || '[]')
+      const entries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
       const filteredEntries = entries.filter(entry => !(entry.id === entryId && entry.userId === userId))
-      localStorage.setItem('devchain_entries', JSON.stringify(filteredEntries))
+      localStorage.setItem('skillforge_entries', JSON.stringify(filteredEntries))
       
       // Update user stats
-      const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       const userIndex = users.findIndex(u => u.id === userId)
       if (userIndex !== -1) {
         users[userIndex].totalEntries = Math.max(0, (users[userIndex].totalEntries || 1) - 1)
-        localStorage.setItem('devchain_users', JSON.stringify(users))
+        localStorage.setItem('skillforge_users', JSON.stringify(users))
       }
       
       return true
@@ -330,7 +325,7 @@ export const userService = {
       const entries = await this.getUserEntries(userId)
       const badges = await this.getUserBadges(userId)
       const stats = await this.getUserStats(userId)
-      const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       const user = users.find(u => u.id === userId)
       
       return {
@@ -349,7 +344,7 @@ export const userService = {
   // Get user by ID
   async getUserById(userId) {
     try {
-      const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       const user = users.find(u => u.id === userId)
       if (user) {
         delete user.password // Don't return password
@@ -364,7 +359,7 @@ export const userService = {
   // Check if username/email exists
   async checkUserExists(username, email) {
     try {
-      const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       return users.some(u => u.username === username || u.email === email)
     } catch (error) {
       console.error('Failed to check user existence:', error)

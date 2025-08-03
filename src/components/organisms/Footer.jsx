@@ -24,22 +24,22 @@ const Footer = () => {
       { name: 'Profile', href: '/profile' }
     ],
     resources: [
-      { name: 'Documentation', href: 'https://docs.devchain.dev', external: true },
-      { name: 'API Reference', href: 'https://api.devchain.dev', external: true },
-      { name: 'Tutorials', href: 'https://learn.devchain.dev', external: true },
-      { name: 'Blog', href: 'https://blog.devchain.dev', external: true }
+      { name: 'Documentation', href: 'https://docs.skillforge.dev', external: true },
+      { name: 'API Reference', href: 'https://api.skillforge.dev', external: true },
+      { name: 'Tutorials', href: 'https://learn.skillforge.dev', external: true },
+      { name: 'Blog', href: 'https://blog.skillforge.dev', external: true }
     ],
     community: [
-      { name: 'Discord', href: 'https://discord.gg/devchain', external: true },
-      { name: 'GitHub', href: 'https://github.com/devchain/devchain', external: true },
-      { name: 'Twitter', href: 'https://twitter.com/devchain', external: true },
-      { name: 'LinkedIn', href: 'https://linkedin.com/company/devchain', external: true }
+      { name: 'Discord', href: 'https://discord.gg/skillforge', external: true },
+      { name: 'GitHub', href: 'https://github.com/skillforge/skillforge', external: true },
+      { name: 'Twitter', href: 'https://twitter.com/skillforge', external: true },
+      { name: 'LinkedIn', href: 'https://linkedin.com/company/skillforge', external: true }
     ],
     legal: [
       { name: 'Privacy Policy', href: '/privacy' },
       { name: 'Terms of Service', href: '/terms' },
       { name: 'Cookie Policy', href: '#' },
-      { name: 'License', href: 'https://github.com/your-username/devchain/blob/main/LICENSE', external: true }
+      { name: 'License', href: 'https://github.com/your-username/skillforge/blob/main/LICENSE', external: true }
     ]
   }
 
@@ -78,10 +78,10 @@ const Footer = () => {
             >
               <Link to="/" className="flex items-center space-x-2 mb-4">
                 <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">DC</span>
+                  <span className="text-white font-bold text-sm">SF</span>
                 </div>
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  DevChain
+                  SkillForge
                 </span>
               </Link>
               
@@ -184,7 +184,7 @@ const Footer = () => {
               className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4 text-sm text-gray-600 dark:text-gray-300"
             >
               <div className="flex items-center space-x-2">
-                <span>© {currentYear} DevChain.</span>
+                <span>© {currentYear} SkillForge.</span>
                 <span>Built with</span>
                 <Heart className="w-4 h-4 text-red-500 fill-current" />
                 <span>for developers</span>
@@ -213,7 +213,7 @@ const Footer = () => {
                 { icon: Github, href: '#', label: 'GitHub' },
                 { icon: Twitter, href: '#', label: 'Twitter' },
                 { icon: Linkedin, href: '#', label: 'LinkedIn' },
-                { icon: Mail, href: 'mailto:support@devchain.dev', label: 'Email' }
+                { icon: Mail, href: 'mailto:support@skillforge.dev', label: 'Email' }
               ].map((social, index) => {
                 const Icon = social.icon
                 return (

@@ -162,10 +162,10 @@ const Landing = () => {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-              Why Choose DevChain?
+              Why Choose SkillForge?
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Built on Hedera's enterprise-grade blockchain technology, DevChain provides 
+              Built on Hedera's enterprise-grade blockchain technology, SkillForge provides 
               the most secure and efficient way to track and verify your learning journey.
             </p>
           </motion.div>

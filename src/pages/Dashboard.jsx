@@ -46,7 +46,7 @@ const Dashboard = () => {
       setDataLoading(true)
       
       // Load entries from localStorage
-      const allEntries = JSON.parse(localStorage.getItem('devchain_entries') || '[]')
+      const allEntries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
       const userEntries = allEntries.filter(entry => entry.userId === user.id)
       setEntries(userEntries)
       

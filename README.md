@@ -1,4 +1,4 @@
-# 🚀 DevChain - Immutable Learning Milestone Tracker
+# 🚀 SkillForge - Immutable Learning Milestone Tracker
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-18.0+-blue.svg)](https://reactjs.org/)
@@ -63,8 +63,8 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/devchain.git
-   cd devchain
+   git clone https://github.com/your-username/skillforge.git
+   cd skillforge
    ```
 
 2. **Install dependencies**
@@ -220,10 +220,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- **Documentation**: [docs.devchain.dev](https://docs.devchain.dev)
-- **Discord**: [Join our community](https://discord.gg/devchain)
-- **Twitter**: [@devchain](https://twitter.com/devchain)
-- **Email**: support@devchain.dev
+- **Documentation**: [docs.skillforge.dev](https://docs.skillforge.dev)
+- **Discord**: [Join our community](https://discord.gg/skillforge)
+- **Twitter**: [@skillforge](https://twitter.com/skillforge)
+- **Email**: support@skillforge.dev
 
 ## 🗺️ Roadmap
 
@@ -249,4 +249,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Built with ❤️ for the developer community**
 
-*DevChain - Where learning meets blockchain verification*
+*SkillForge - Where learning meets blockchain verification*

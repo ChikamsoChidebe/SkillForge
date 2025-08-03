@@ -36,7 +36,7 @@ const PrivacyPolicy = () => {
         <Card className="prose prose-gray dark:prose-invert max-w-none">
           <h2>Introduction</h2>
           <p>
-            DevChain ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our blockchain-based learning milestone tracker.
+            SkillForge ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our blockchain-based learning milestone tracker.
           </p>
 
           <h2>Information We Collect</h2>
@@ -89,7 +89,7 @@ const PrivacyPolicy = () => {
           <p>
             If you have questions about this Privacy Policy, please contact us at:
             <br />
-            Email: privacy@devchain.dev
+            Email: privacy@skillforge.dev
           </p>
         </Card>
       </motion.div>

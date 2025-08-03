@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
+import { syncService } from '@/api/syncService'
 
 const AuthContext = createContext()
 
@@ -18,7 +19,7 @@ export const AuthProvider = ({ children }) => {
 
   // Load user from localStorage on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('devchain_user')
+    const savedUser = localStorage.getItem('skillforge_user')
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser)
@@ -26,7 +27,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true)
       } catch (error) {
         console.error('Error loading user data:', error)
-        localStorage.removeItem('devchain_user')
+        localStorage.removeItem('skillforge_user')
       }
     }
     setIsLoading(false)
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true)
       
       // Check if user already exists
-      const existingUsers = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+      const existingUsers = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       const userExists = existingUsers.find(u => 
         u.email === userData.email || u.username === userData.username
       )
@@ -65,12 +66,11 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      // Save to users list
-      existingUsers.push(newUser)
-      localStorage.setItem('devchain_users', JSON.stringify(existingUsers))
+      // Create with cloud sync
+      await syncService.createUserWithSync(newUser)
       
       // Set as current user
-      localStorage.setItem('devchain_user', JSON.stringify(newUser))
+      localStorage.setItem('skillforge_user', JSON.stringify(newUser))
       setUser(newUser)
       setIsAuthenticated(true)
       
@@ -88,16 +88,17 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true)
       
-      const existingUsers = JSON.parse(localStorage.getItem('devchain_users') || '[]')
-      const user = existingUsers.find(u => 
-        (u.email === credentials.identifier || u.username === credentials.identifier)
-      )
+      // Login with cloud sync
+      const user = await syncService.loginWithSync(credentials.identifier, credentials.password)
       
       if (!user) {
-        throw new Error('User not found')
+        throw new Error('Invalid credentials')
       }
 
-      localStorage.setItem('devchain_user', JSON.stringify(user))
+      // Sync user entries after login
+      setTimeout(() => syncService.syncUserEntries(user.id), 1000)
+      
+      localStorage.setItem('skillforge_user', JSON.stringify(user))
       setUser(user)
       setIsAuthenticated(true)
       
@@ -112,7 +113,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = () => {
-    localStorage.removeItem('devchain_user')
+    localStorage.removeItem('skillforge_user')
     setUser(null)
     setIsAuthenticated(false)
     toast.success('Logged out successfully')
@@ -122,15 +123,15 @@ export const AuthProvider = ({ children }) => {
     const updatedUser = { ...user, ...updates }
     
     // Update in users list
-    const existingUsers = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+    const existingUsers = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
     const userIndex = existingUsers.findIndex(u => u.id === user.id)
     if (userIndex !== -1) {
       existingUsers[userIndex] = updatedUser
-      localStorage.setItem('devchain_users', JSON.stringify(existingUsers))
+      localStorage.setItem('skillforge_users', JSON.stringify(existingUsers))
     }
     
     // Update current user
-    localStorage.setItem('devchain_user', JSON.stringify(updatedUser))
+    localStorage.setItem('skillforge_user', JSON.stringify(updatedUser))
     setUser(updatedUser)
   }
 

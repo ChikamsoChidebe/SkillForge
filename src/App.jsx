@@ -1,3 +1,4 @@
+import React from 'react'
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
@@ -5,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 import { AppProvider } from '@/contexts/AppContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { emailScheduler } from '@/utils/emailScheduler'
 import Navbar from '@/components/organisms/Navbar'
 import Footer from '@/components/organisms/Footer'
 import ProtectedRoute from '@/components/organisms/ProtectedRoute'
@@ -87,6 +89,10 @@ function AppContent() {
 }
 
 function App() {
+  React.useEffect(() => {
+    emailScheduler.init()
+  }, [])
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

@@ -1,9 +1,9 @@
 {
-  "name": "devchain",
+  "name": "skillforge",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "DevChain - Immutable Learning Milestone Tracker on Hedera",
+  "description": "SkillForge - Immutable Learning Milestone Tracker on Hedera",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

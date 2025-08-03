@@ -5,6 +5,7 @@ import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
 import { useAuth } from '@/contexts/AuthContext'
 import { useApp } from '@/contexts/AppContext'
+import { emailService } from '@/api/emailService'
 import { toast } from 'react-hot-toast'
 
 const LogEntryForm = ({ onSuccess, user: propUser }) => {
@@ -67,6 +68,16 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
       if (badgeUnlocked) {
         toast.success(`🏆 Badge Unlocked: ${badgeUnlocked}!`, { duration: 6000 })
         updateUser({ totalBadges: currentUser.totalBadges + 1 })
+        
+        // Send badge unlock email
+        if (currentUser.email) {
+          emailService.sendBadgeUnlockedEmail(currentUser, {
+            name: badgeUnlocked,
+            description: getBadgeDescription(badgeUnlocked),
+            icon: getBadgeIcon(badgeUnlocked),
+            rarity: getBadgeRarity(badgeUnlocked)
+          })
+        }
       }
       
       toast.success('Learning entry recorded on blockchain! 🎉')
@@ -95,6 +106,42 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
       100: 'Learning Legend'
     }
     return badges[totalEntries]
+  }
+  
+  const getBadgeDescription = (badgeName) => {
+    const descriptions = {
+      'First Steps': 'Recorded your first learning milestone',
+      'Learning Streak': 'Completed 5 learning milestones',
+      'Knowledge Builder': 'Reached 10 learning milestones',
+      'Learning Master': 'Achieved 20 learning milestones',
+      'Dedicated Learner': 'Completed 50 learning milestones',
+      'Learning Legend': 'Reached 100 learning milestones'
+    }
+    return descriptions[badgeName] || 'Achievement unlocked!'
+  }
+  
+  const getBadgeIcon = (badgeName) => {
+    const icons = {
+      'First Steps': '🎯',
+      'Learning Streak': '🔥',
+      'Knowledge Builder': '🏗️',
+      'Learning Master': '👑',
+      'Dedicated Learner': '🌟',
+      'Learning Legend': '🏆'
+    }
+    return icons[badgeName] || '🏅'
+  }
+  
+  const getBadgeRarity = (badgeName) => {
+    const rarities = {
+      'First Steps': 'common',
+      'Learning Streak': 'uncommon',
+      'Knowledge Builder': 'rare',
+      'Learning Master': 'legendary',
+      'Dedicated Learner': 'legendary',
+      'Learning Legend': 'legendary'
+    }
+    return rarities[badgeName] || 'common'
   }
 
   const handleChange = (e) => {

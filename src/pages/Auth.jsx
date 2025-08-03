@@ -63,7 +63,7 @@ const Auth = () => {
           throw new Error('Passwords do not match')
         }
         
-        const users = JSON.parse(localStorage.getItem('devchain_users') || '[]')
+        const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
         const existingUser = users.find(u => u.email === formData.email || u.username === formData.username)
         if (existingUser) {
           throw new Error('User already exists')
@@ -71,7 +71,7 @@ const Auth = () => {
         
         const newUser = await register(formData)
         users.push(newUser)
-        localStorage.setItem('devchain_users', JSON.stringify(users))
+        localStorage.setItem('skillforge_users', JSON.stringify(users))
         
         toast.success('Account created successfully!')
         navigate('/wallet-connect')
@@ -153,7 +153,7 @@ const Auth = () => {
               </motion.div>
               <div>
                 <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
-                  DevChain
+                  SkillForge
                 </span>
                 <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
                   Blockchain Learning Platform
@@ -395,7 +395,7 @@ const Auth = () => {
                 </motion.div>
                 
                 <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                  {mode === 'login' ? 'Welcome Back!' : 'Join DevChain'}
+                  {mode === 'login' ? 'Welcome Back!' : 'Join SkillForge'}
                 </h2>
                 <p className="text-gray-600 dark:text-gray-400">
                   {mode === 'login' 

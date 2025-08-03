@@ -36,12 +36,12 @@ const TermsOfService = () => {
         <Card className="prose prose-gray dark:prose-invert max-w-none">
           <h2>Agreement to Terms</h2>
           <p>
-            By accessing and using DevChain, you accept and agree to be bound by the terms and provision of this agreement.
+            By accessing and using SkillForge, you accept and agree to be bound by the terms and provision of this agreement.
           </p>
 
           <h2>Description of Service</h2>
           <p>
-            DevChain is a blockchain-based platform that allows users to record learning milestones and earn verifiable NFT badges on the Hedera network.
+            SkillForge is a blockchain-based platform that allows users to record learning milestones and earn verifiable NFT badges on the Hedera network.
           </p>
 
           <h2>User Responsibilities</h2>
@@ -61,7 +61,7 @@ const TermsOfService = () => {
           </ul>
 
           <h2>Prohibited Uses</h2>
-          <p>You may not use DevChain to:</p>
+          <p>You may not use SkillForge to:</p>
           <ul>
             <li>Submit false or misleading learning information</li>
             <li>Violate any laws or regulations</li>
@@ -71,7 +71,7 @@ const TermsOfService = () => {
 
           <h2>Limitation of Liability</h2>
           <p>
-            DevChain shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the service.
+            SkillForge shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the service.
           </p>
 
           <h2>Changes to Terms</h2>
@@ -83,7 +83,7 @@ const TermsOfService = () => {
           <p>
             For questions about these Terms of Service, contact us at:
             <br />
-            Email: legal@devchain.dev
+            Email: legal@skillforge.dev
           </p>
         </Card>
       </motion.div>

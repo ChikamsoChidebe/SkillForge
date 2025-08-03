@@ -1,6 +1,6 @@
 {
-  "name": "DevChain - Learning Milestone Tracker",
-  "short_name": "DevChain",
+  "name": "SkillForge - Learning Milestone Tracker",
+  "short_name": "SkillForge",
   "description": "Track your learning journey on the blockchain with verifiable NFT badges",
   "start_url": "/",
   "display": "standalone",
