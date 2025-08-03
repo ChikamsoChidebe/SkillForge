@@ -119,13 +119,24 @@ const Navbar = () => {
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
                 <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-green-100 dark:bg-green-900 rounded-lg">
-                  <img 
-                    src={user.avatar} 
-                    alt={user.fullName}
-                    className="w-6 h-6 rounded-full"
-                  />
+                  {user.avatar ? (
+                    <img 
+                      src={user.avatar} 
+                      alt={user.fullName || user.username}
+                      className="w-6 h-6 rounded-full"
+                      onError={(e) => {
+                        e.target.style.display = 'none'
+                        e.target.nextSibling.style.display = 'flex'
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className={`w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold ${user.avatar ? 'hidden' : 'flex'}`}
+                  >
+                    {(user.fullName || user.username || 'U').charAt(0).toUpperCase()}
+                  </div>
                   <span className="text-sm font-medium text-green-700 dark:text-green-300">
-                    {user.username}
+                    {user.username || user.fullName}
                   </span>
                 </div>
                 <Button

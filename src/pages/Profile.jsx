@@ -284,8 +284,21 @@ const Profile = () => {
           >
             <Card>
               <div className="text-center mb-6">
-                <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-12 h-12 text-white" />
+                {user?.avatar ? (
+                  <img 
+                    src={user.avatar} 
+                    alt={user.fullName || user.username}
+                    className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-white dark:border-gray-700 shadow-lg"
+                    onError={(e) => {
+                      e.target.style.display = 'none'
+                      e.target.nextSibling.style.display = 'flex'
+                    }}
+                  />
+                ) : null}
+                <div 
+                  className={`w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white text-2xl font-bold shadow-lg ${user?.avatar ? 'hidden' : 'flex'}`}
+                >
+                  {(user?.fullName || user?.username || 'U').charAt(0).toUpperCase()}
                 </div>
                 
                 {isEditing ? (
