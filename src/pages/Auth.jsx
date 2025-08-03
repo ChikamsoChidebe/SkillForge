@@ -76,9 +76,13 @@ const Auth = () => {
         toast.success('Account created successfully!')
         navigate('/wallet-connect')
       } else {
-        await login(formData)
-        toast.success('Welcome back!')
-        navigate('/dashboard')
+        const result = await login({
+          identifier: formData.email,
+          password: formData.password
+        })
+        if (result.success) {
+          navigate('/dashboard')
+        }
       }
     } catch (error) {
       toast.error(error.message)
