@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import AuthModal from './AuthModal'
 import Button from '@/components/atoms/Button'
+import LoadingSpinner from '@/components/organisms/LoadingSpinner'
 import { ShieldCheckIcon, UserPlusIcon } from '@heroicons/react/24/outline'
 
 const ProtectedRoute = ({ children, fallback }) => {
@@ -11,8 +12,8 @@ const ProtectedRoute = ({ children, fallback }) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-[400px]">
+        <LoadingSpinner size="lg" text="Checking authentication..." />
       </div>
     )
   }

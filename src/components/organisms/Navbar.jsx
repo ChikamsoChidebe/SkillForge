@@ -139,20 +139,22 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="hidden sm:flex items-center space-x-2">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => window.location.href = '/#auth'}
-                >
-                  Sign In
-                </Button>
-                <Button 
-                  variant="primary" 
-                  size="sm"
-                  onClick={() => window.location.href = '/#auth'}
-                >
-                  Get Started
-                </Button>
+                <Link to="/auth">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button 
+                    variant="primary" 
+                    size="sm"
+                  >
+                    Get Started
+                  </Button>
+                </Link>
               </div>
             )}
 
@@ -247,30 +249,26 @@ const Navbar = () => {
                   </Button>
                 ) : (
                   <div className="space-y-2 mt-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false)
-                        window.location.href = '/#auth'
-                      }}
-                      className="w-full justify-start"
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Sign In
-                    </Button>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false)
-                        window.location.href = '/#auth'
-                      }}
-                      className="w-full justify-start"
-                    >
-                      <Wallet className="w-4 h-4 mr-2" />
-                      Get Started
-                    </Button>
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full justify-start"
+                      >
+                        <User className="w-4 h-4 mr-2" />
+                        Sign In
+                      </Button>
+                    </Link>
+                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button
+                        variant="primary"
+                        size="sm"
+                        className="w-full justify-start"
+                      >
+                        <Wallet className="w-4 h-4 mr-2" />
+                        Get Started
+                      </Button>
+                    </Link>
                   </div>
                 )}
               </div>

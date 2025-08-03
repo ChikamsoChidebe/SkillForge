@@ -29,6 +29,7 @@ import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
 import Card from '@/components/atoms/Card'
 import Badge from '@/components/atoms/Badge'
+import LoadingSpinner from '@/components/organisms/LoadingSpinner'
 import { useAuth } from '@/contexts/AuthContext'
 import { userService } from '@/api/userService'
 import toast from 'react-hot-toast'
@@ -251,8 +252,8 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-[60vh]">
+        <LoadingSpinner size="lg" text="Loading your profile..." />
       </div>
     )
   }

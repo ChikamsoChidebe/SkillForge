@@ -11,6 +11,7 @@ import ProtectedRoute from '@/components/organisms/ProtectedRoute'
 import ErrorBoundary from '@/components/organisms/ErrorBoundary'
 import OfflineIndicator from '@/components/organisms/OfflineIndicator'
 import UpdateNotification from '@/components/organisms/UpdateNotification'
+import PageLoader from '@/components/organisms/PageLoader'
 import Dashboard from '@/pages/Dashboard'
 import LogEntry from '@/pages/LogEntry'
 import BadgeGallery from '@/pages/BadgeGallery'
@@ -40,46 +41,48 @@ function AppContent() {
   const location = useLocation()
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-300 flex flex-col">
-      {location.pathname !== '/auth' && location.pathname !== '/wallet-connect' && <Navbar />}
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/wallet-connect" element={<WalletConnect />} />
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/log-entry" element={<ProtectedRoute><LogEntry /></ProtectedRoute>} />
-          <Route path="/badges" element={<ProtectedRoute><BadgeGallery /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-          <Route path="/ai-coach" element={<ProtectedRoute><AICoach /></ProtectedRoute>} />
-          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </main>
-      <Footer />
-      <ChatWidget />
-      <OfflineIndicator />
-      <UpdateNotification />
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-          },
-          success: {
-            duration: 3000,
-            theme: {
-              primary: 'green',
-              secondary: 'black',
+    <PageLoader>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-300 flex flex-col">
+        {location.pathname !== '/auth' && location.pathname !== '/wallet-connect' && <Navbar />}
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/wallet-connect" element={<WalletConnect />} />
+            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/log-entry" element={<ProtectedRoute><LogEntry /></ProtectedRoute>} />
+            <Route path="/badges" element={<ProtectedRoute><BadgeGallery /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/ai-coach" element={<ProtectedRoute><AICoach /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <Footer />
+        <ChatWidget />
+        <OfflineIndicator />
+        <UpdateNotification />
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
             },
-          },
-        }}
-      />
-    </div>
+            success: {
+              duration: 3000,
+              theme: {
+                primary: 'green',
+                secondary: 'black',
+              },
+            },
+          }}
+        />
+      </div>
+    </PageLoader>
   )
 }
 
