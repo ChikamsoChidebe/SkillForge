@@ -36,26 +36,9 @@ export const realEmailService = {
   },
 
   async sendViaNetlify(templateParams) {
-    try {
-      const response = await fetch('/.netlify/functions/send-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(templateParams)
-      })
-      
-      const result = await response.json()
-      
-      if (response.ok && result.success) {
-        console.log('✅ Real email sent via Netlify + Resend!')
-        console.log('📧 Email ID:', result.id)
-        return { success: true, response: result }
-      } else {
-        throw new Error(result.error || 'Netlify function failed')
-      }
-    } catch (error) {
-      console.log('⚠️ Netlify function not available:', error.message)
-      return { success: false, error: error.message }
-    }
+    // Netlify function disabled - using console preview only
+    console.log('📧 Netlify function disabled - using console preview')
+    return { success: false, error: 'Netlify function disabled' }
   },
 
   // Welcome email with custom HTML design
