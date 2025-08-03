@@ -6,7 +6,7 @@ import Input from '@/components/atoms/Input'
 import BlockchainStatus from '@/components/organisms/BlockchainStatus'
 import { useAuth } from '@/contexts/AuthContext'
 import { useApp } from '@/contexts/AppContext'
-import { emailService } from '@/api/emailService'
+import { realEmailService } from '@/api/realEmailService'
 import { toast } from 'react-hot-toast'
 
 const LogEntryForm = ({ onSuccess, user: propUser }) => {
@@ -81,7 +81,7 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         
         // Send badge unlock email
         if (currentUser.email) {
-          emailService.sendBadgeUnlockedEmail(currentUser, {
+          realEmailService.sendBadgeUnlockedEmail(currentUser, {
             name: badgeUnlocked,
             description: getBadgeDescription(badgeUnlocked),
             icon: getBadgeIcon(badgeUnlocked),

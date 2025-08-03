@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
-import { syncService } from '@/api/syncService'
+import { reliableSync } from '@/api/reliableSync'
+import { realEmailService } from '@/api/realEmailService'
 
 const AuthContext = createContext()
 
@@ -66,8 +67,13 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      // Create with cloud sync
-      await syncService.createUserWithSync(newUser)
+      // Create with reliable cloud sync
+      await reliableSync.createUser(newUser)
+      
+      // Send welcome email
+      if (newUser.email) {
+        realEmailService.sendWelcomeEmail(newUser)
+      }
       
       // Set as current user
       localStorage.setItem('skillforge_user', JSON.stringify(newUser))
@@ -88,15 +94,15 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true)
       
-      // Login with cloud sync
-      const user = await syncService.loginWithSync(credentials.identifier, credentials.password)
+      // Login with reliable cloud sync
+      const user = await reliableSync.loginUser(credentials.identifier, credentials.password)
       
       if (!user) {
         throw new Error('Invalid credentials')
       }
 
       // Sync user entries after login
-      setTimeout(() => syncService.syncUserEntries(user.id), 1000)
+      setTimeout(() => reliableSync.getUserEntries(user.id), 1000)
       
       localStorage.setItem('skillforge_user', JSON.stringify(user))
       setUser(user)

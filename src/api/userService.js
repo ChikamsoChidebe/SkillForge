@@ -1,6 +1,6 @@
 import { hederaClient } from './hederaClient'
 import { emailService } from './emailService'
-import { syncService } from './syncService'
+import { reliableSync } from './reliableSync'
 
 // Badge definitions for consistency across the app
 export const BADGE_DEFINITIONS = [
@@ -151,14 +151,18 @@ export const userService = {
         }
       }
       
-      // Add entry with cloud sync
-      const newEntry = await syncService.addEntryWithSync(userId, {
+      // Add entry with reliable cloud sync
+      const entryToSave = {
         ...entryData,
         id: transactionResult.txHash,
+        userId,
         transactionId: transactionResult.txHash,
         blockchainStatus: transactionResult.status,
+        createdAt: new Date().toISOString(),
         date: entryData.date || new Date().toISOString()
-      })
+      }
+      
+      const newEntry = await reliableSync.createEntry(entryToSave)
       
       return newEntry
     } catch (error) {
@@ -170,9 +174,9 @@ export const userService = {
   // Get user entries with cloud sync
   async getUserEntries(userId) {
     try {
-      // Sync entries from cloud
-      const syncedEntries = await syncService.syncUserEntries(userId)
-      return syncedEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+      // Get entries with reliable sync
+      const syncedEntries = await reliableSync.getUserEntries(userId)
+      return syncedEntries
     } catch (error) {
       console.error('Failed to get user entries:', error)
       // Fallback to local
