@@ -26,7 +26,6 @@ class HederaClient {
       const accountId = import.meta.env.VITE_HEDERA_ACCOUNT_ID
       const privateKey = import.meta.env.VITE_HEDERA_PRIVATE_KEY
       
-      // Check if environment variables are properly set
       if (!accountId || !privateKey || privateKey === 'your-private-key-here') {
         throw new Error('Hedera credentials not configured. Please set VITE_HEDERA_ACCOUNT_ID and VITE_HEDERA_PRIVATE_KEY in .env.local')
       }
@@ -47,7 +46,6 @@ class HederaClient {
   async connectWallet() {
     await this.initialize()
     
-    // Real Hedera connection
     return {
       accountId: this.operatorId.toString(),
       publicKey: this.operatorKey.publicKey.toString(),
@@ -72,17 +70,38 @@ class HederaClient {
       const timestamp = new Date(date).toISOString()
       const payload = `${timestamp}|${category}|${title}|${description}`.substring(0, 100)
       
-      // Skip blockchain for now - just return local success
-      console.log('Blockchain recording disabled for stability')
+      // Create a simple transfer transaction with memo
+      const transaction = new TransferTransaction()
+        .addHbarTransfer(this.operatorId, new Hbar(-0.00000001)) // Minimal amount
+        .addHbarTransfer('0.0.98', new Hbar(0.00000001)) // Hedera fee collection
+        .setTransactionMemo(payload)
+        .setMaxTransactionFee(new Hbar(2))
+        .setTransactionValidDuration(180) // 3 minutes
       
-      // Return immediate success for UI updates
+      // Execute transaction
+      const response = await transaction.execute(this.client)
+      const receipt = await response.getReceipt(this.client)
+      
+      console.log('✅ Hedera transaction successful:', response.transactionId.toString())
+      
       return {
-        txHash: `local_${Date.now()}`,
-        status: 'LOCAL_SUCCESS',
+        txHash: response.transactionId.toString(),
+        status: receipt.status.toString(),
         timestamp: Date.now(),
         entry: { title, description, date, category }
       }
-
+    } catch (error) {
+      console.error('❌ Hedera transaction failed:', error)
+      
+      // Fallback to local storage but still return success for UI
+      return {
+        txHash: `local_${Date.now()}`,
+        status: 'LOCAL_FALLBACK',
+        timestamp: Date.now(),
+        entry: { title, description, date, category },
+        error: error.message
+      }
+    }
   }
 
   async getEntries(limit = 50) {
@@ -129,8 +148,8 @@ class HederaClient {
     
     try {
       const transaction = new TokenCreateTransaction()
-        .setTokenName('DevChain Learning Badge')
-        .setTokenSymbol('DCBADGE')
+        .setTokenName('SkillForge Learning Badge')
+        .setTokenSymbol('SFBADGE')
         .setTokenType(TokenType.NonFungibleUnique)
         .setSupplyType(TokenSupplyType.Finite)
         .setMaxSupply(1000)

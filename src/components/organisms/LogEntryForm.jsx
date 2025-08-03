@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { Calendar, BookOpen, FileText, Tag, Trophy, Save } from 'lucide-react'
 import Button from '@/components/atoms/Button'
 import Input from '@/components/atoms/Input'
+import BlockchainStatus from '@/components/organisms/BlockchainStatus'
 import { useAuth } from '@/contexts/AuthContext'
 import { useApp } from '@/contexts/AppContext'
 import { emailService } from '@/api/emailService'
@@ -12,6 +13,7 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
   const { user, updateUser } = useAuth()
   const { addEntry } = useApp()
   const [isLoading, setIsLoading] = useState(false)
+  const [blockchainResult, setBlockchainResult] = useState(null)
   const currentUser = propUser || user
   const [formData, setFormData] = useState({
     title: '',
@@ -60,11 +62,15 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         lastEntryDate: new Date().toISOString()
       })
 
-      // Add to blockchain (will use local fallback)
-      try {
-        await addEntry(entryData)
-      } catch (error) {
-        console.warn('Blockchain recording failed, but entry saved locally:', error)
+      // Add to blockchain
+      const blockchainResult = await addEntry(entryData)
+      setBlockchainResult(blockchainResult)
+      
+      // Show appropriate success message
+      if (blockchainResult.txHash && !blockchainResult.txHash.startsWith('local_')) {
+        toast.success('🎉 Entry recorded on Hedera blockchain!')
+      } else {
+        toast.success('✅ Entry saved successfully!')
       }
       
       // Check for badge unlock
@@ -84,7 +90,7 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         }
       }
       
-      toast.success('Learning entry recorded on blockchain! 🎉')
+      // Success message handled above
       setFormData({
         title: '',
         description: '',
@@ -156,7 +162,14 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <>
+      <BlockchainStatus 
+        txHash={blockchainResult?.txHash}
+        status={blockchainResult?.status}
+        error={blockchainResult?.error}
+      />
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Title
@@ -254,6 +267,7 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         </div>
       </div>
     </form>
+    </>
   )
 }
 
