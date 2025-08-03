@@ -87,11 +87,26 @@ export function AppProvider({ children }) {
     }
   }, [])
 
+  const addEntry = async (entryData) => {
+    try {
+      // Add to blockchain via Hedera
+      const result = await hederaClient.addEntry(entryData)
+      dispatch({ type: 'ADD_ENTRY', payload: { ...entryData, ...result } })
+      return result
+    } catch (error) {
+      console.error('Failed to add entry to blockchain:', error)
+      // Still add locally even if blockchain fails
+      dispatch({ type: 'ADD_ENTRY', payload: entryData })
+      throw error
+    }
+  }
+
   const value = {
     ...state,
     dispatch,
     connectWallet,
     disconnectWallet,
+    addEntry,
     toggleModal,
     closeAllModals,
   }

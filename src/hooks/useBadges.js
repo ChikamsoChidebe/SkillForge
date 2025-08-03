@@ -1,49 +1,63 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { hederaClient } from '@/api/hederaClient'
-import { useApp } from '@/contexts/AppContext'
+import { userService } from '@/api/userService'
+import { useAuth } from '@/contexts/AuthContext'
 import toast from 'react-hot-toast'
 
 export function useBadges() {
-  const { isConnected } = useApp()
+  const { user, isAuthenticated } = useAuth()
 
   return useQuery({
-    queryKey: ['badges'],
-    queryFn: () => hederaClient.getBadges(),
-    enabled: isConnected,
-    staleTime: 1000 * 60 * 10, // 10 minutes
+    queryKey: ['badges', user?.id],
+    queryFn: () => userService.getUserBadges(user.id),
+    enabled: isAuthenticated && !!user?.id,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   })
 }
 
 export function useMintBadge() {
   const queryClient = useQueryClient()
-  const { dispatch } = useApp()
+  const { user } = useAuth()
 
   return useMutation({
-    mutationFn: ({ milestone, metadata }) => 
-      hederaClient.mintBadge(milestone, metadata),
+    mutationFn: async ({ milestone, metadata }) => {
+      try {
+        // Mint NFT badge on Hedera
+        const result = await hederaClient.mintBadge(milestone, metadata)
+        
+        // Update local storage to mark badge as claimed
+        const badgeKey = `badge_${user.id}_${milestone}`
+        localStorage.setItem(badgeKey, JSON.stringify({
+          claimed: true,
+          claimedAt: new Date().toISOString(),
+          transactionId: result.transactionId
+        }))
+        
+        return { ...result, milestone, metadata }
+      } catch (error) {
+        console.error('Failed to mint badge:', error)
+        throw error
+      }
+    },
     onSuccess: (data) => {
-      // Update badges cache
-      queryClient.setQueryData(['badges'], (old) => {
-        if (!old) return []
-        return old.map(badge => 
-          badge.milestone === data.milestone 
-            ? { ...badge, unlocked: true, unlockedAt: new Date().toISOString() }
-            : badge
-        )
-      })
-
-      dispatch({ type: 'ADD_BADGE', payload: data })
-      toast.success(`🎉 Badge unlocked: ${data.metadata?.name || 'Achievement'}!`)
+      // Invalidate badges cache to refetch
+      queryClient.invalidateQueries(['badges', user?.id])
+      toast.success(`🎉 Badge claimed: ${data.metadata?.name || 'Achievement'}!`)
     },
     onError: (error) => {
-      toast.error(`Failed to mint badge: ${error.message}`)
+      toast.error(`Failed to claim badge: ${error.message}`)
     },
   })
 }
 
 export function useCheckBadgeEligibility() {
-  const { data: entries } = useQuery({ queryKey: ['entries'] })
-  const { data: badges } = useQuery({ queryKey: ['badges'] })
+  const { user } = useAuth()
+  const { data: entries } = useQuery({ 
+    queryKey: ['entries', user?.id],
+    queryFn: () => userService.getUserEntries(user.id),
+    enabled: !!user?.id
+  })
+  const { data: badges } = useBadges()
 
   const checkEligibility = () => {
     if (!entries || !badges) return []

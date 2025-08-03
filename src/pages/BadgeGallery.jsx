@@ -26,7 +26,7 @@ import BadgeTile from '@/components/molecules/BadgeTile'
 import Modal from '@/components/molecules/Modal'
 import { useBadges, useMintBadge, useCheckBadgeEligibility } from '@/hooks/useBadges'
 import { useEntries } from '@/hooks/useEntries'
-import { useApp } from '@/contexts/AppContext'
+import { useAuth } from '@/contexts/AuthContext'
 import toast from 'react-hot-toast'
 
 const BadgeGallery = () => {
@@ -38,7 +38,7 @@ const BadgeGallery = () => {
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [claimableBadge, setClaimableBadge] = useState(null)
 
-  const { isConnected } = useApp()
+  const { isAuthenticated } = useAuth()
   const { data: badges = [], isLoading: badgesLoading } = useBadges()
   const { data: entries = [] } = useEntries()
   const { eligibleBadges, entryCount } = useCheckBadgeEligibility()
@@ -145,17 +145,17 @@ const BadgeGallery = () => {
     legendary: { bg: 'bg-yellow-100 dark:bg-yellow-900', text: 'text-yellow-700 dark:text-yellow-300', border: 'border-yellow-300' }
   }
 
-  if (!isConnected) {
+  if (!isAuthenticated) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="text-center max-w-md">
           <Trophy className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-semibold mb-2">Connect Your Wallet</h2>
+          <h2 className="text-2xl font-semibold mb-2">Sign In Required</h2>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Connect your wallet to view and claim your learning badges.
+            Sign in to view and claim your learning badges.
           </p>
-          <Button onClick={() => window.location.reload()}>
-            Refresh Page
+          <Button onClick={() => window.location.href = '/auth'}>
+            Sign In
           </Button>
         </Card>
       </div>
