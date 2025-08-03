@@ -15,6 +15,16 @@ export const realEmailService = {
     try {
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID
       const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+      
+      // Debug: Log environment variables
+      console.log('📧 EmailJS Environment Check:', {
+        hasServiceId: !!serviceId,
+        hasTemplateId: !!templateId,
+        hasPublicKey: !!publicKey,
+        serviceId: serviceId || 'MISSING',
+        templateId: templateId || 'MISSING'
+      })
       
       if (!serviceId || !templateId) {
         console.warn('EmailJS not configured - check environment variables')

@@ -39,6 +39,16 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true)
       
+      // Debug: Log what userData contains
+      console.log('🔍 Register called with userData:', {
+        username: userData.username,
+        email: userData.email,
+        fullName: userData.fullName,
+        hasPassword: !!userData.password,
+        passwordLength: userData.password?.length,
+        allKeys: Object.keys(userData)
+      })
+      
       // Check if user already exists
       const existingUsers = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
       const userExists = existingUsers.find(u => 
