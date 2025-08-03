@@ -24,6 +24,7 @@ import TutorialCard from '@/components/molecules/TutorialCard'
 import Modal from '@/components/molecules/Modal'
 import { useApp } from '@/contexts/AppContext'
 import { useAuth } from '@/contexts/AuthContext'
+import { supabaseService } from '@/api/supabaseClient'
 
 import LogEntryForm from '@/components/organisms/LogEntryForm'
 

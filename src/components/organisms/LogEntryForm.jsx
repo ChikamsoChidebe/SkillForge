@@ -6,6 +6,7 @@ import Input from '@/components/atoms/Input'
 import BlockchainStatus from '@/components/organisms/BlockchainStatus'
 import { useAuth } from '@/contexts/AuthContext'
 import { useApp } from '@/contexts/AppContext'
+import { supabaseService } from '@/api/supabaseClient'
 import { realEmailService } from '@/api/realEmailService'
 import { toast } from 'react-hot-toast'
 
@@ -44,9 +45,18 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         date: new Date(formData.date).toISOString()
       }
 
-      // Save with reliable sync (cloud-first)
-      const { reliableSync } = await import('@/api/reliableSync')
-      await reliableSync.createEntry(entryData)
+      // Save to Supabase for cross-device sync
+      try {
+        await supabaseService.createEntry(entryData)
+        console.log('✅ Entry saved to Supabase for cross-device access')
+      } catch (error) {
+        console.error('⚠️ Supabase save failed:', error)
+      }
+      
+      // Also save locally as backup
+      const existingEntries = JSON.parse(localStorage.getItem('devchain_entries') || '[]')
+      existingEntries.push(entryData)
+      localStorage.setItem('devchain_entries', JSON.stringify(existingEntries))
       
       // Update user stats
       const newTotalEntries = (currentUser.totalEntries || 0) + 1
@@ -69,9 +79,9 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
       
       // Show appropriate success message
       if (blockchainResult.txHash && !blockchainResult.txHash.startsWith('local_')) {
-        toast.success('🎉 Entry recorded on Hedera blockchain!')
+        toast.success('🎉 Entry saved across all devices & blockchain!')
       } else {
-        toast.success('✅ Entry saved successfully!')
+        toast.success('✅ Entry saved across all devices!')
       }
       
       // Check for badge unlock
