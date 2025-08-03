@@ -54,6 +54,7 @@ export const AuthProvider = ({ children }) => {
         id: Date.now().toString(),
         username: userData.username,
         email: userData.email,
+        password: userData.password, // ✅ Added missing password
         fullName: userData.fullName,
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
         createdAt: new Date().toISOString(),
