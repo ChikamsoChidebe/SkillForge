@@ -90,7 +90,7 @@ export function AppProvider({ children }) {
   const addEntry = async (entryData) => {
     try {
       // Add to blockchain via Hedera
-      const result = await hederaClient.addEntry(entryData)
+      const result = await hederaClient.recordEntry(entryData)
       dispatch({ type: 'ADD_ENTRY', payload: { ...entryData, ...result } })
       return result
     } catch (error) {

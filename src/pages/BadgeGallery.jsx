@@ -15,7 +15,8 @@ import {
   Calendar,
   ExternalLink,
   Share2,
-  Download
+  Download,
+  CheckCircle
 } from 'lucide-react'
 import { format } from 'date-fns'
 import Button from '@/components/atoms/Button'
@@ -27,6 +28,7 @@ import Modal from '@/components/molecules/Modal'
 import { useBadges, useMintBadge, useCheckBadgeEligibility } from '@/hooks/useBadges'
 import { useEntries } from '@/hooks/useEntries'
 import { useAuth } from '@/contexts/AuthContext'
+import ProgressCoach from '@/components/organisms/ProgressCoach'
 import toast from 'react-hot-toast'
 
 const BadgeGallery = () => {
@@ -85,11 +87,19 @@ const BadgeGallery = () => {
     return {
       unlocked: unlockedBadges.length,
       total: totalBadges,
+      totalEntries: entryCount,
       completionRate,
       eligible: eligibleBadges.length,
       rarityStats
     }
-  }, [badges, eligibleBadges])
+  }, [badges, eligibleBadges, entryCount])
+
+  // Find next badge to unlock
+  const nextBadge = useMemo(() => {
+    return badges
+      .filter(badge => !badge.unlocked)
+      .sort((a, b) => a.milestone - b.milestone)[0]
+  }, [badges])
 
   const handleBadgeClick = (badge) => {
     setSelectedBadge(badge)
@@ -231,8 +241,15 @@ const BadgeGallery = () => {
         </motion.div>
       </div>
 
+      {/* Progress Coach */}
+      <ProgressCoach 
+        stats={stats}
+        nextBadge={nextBadge}
+        onAddEntry={() => window.location.href = '/log-entry'}
+      />
+
       {/* Statistics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
           {
             label: 'Badges Earned',
@@ -267,14 +284,14 @@ const BadgeGallery = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="text-center">
-                <div className={`w-12 h-12 bg-${stat.color}-100 dark:bg-${stat.color}-900 rounded-xl flex items-center justify-center mx-auto mb-3`}>
-                  <Icon className={`w-6 h-6 text-${stat.color}-600 dark:text-${stat.color}-400`} />
+              <Card className="text-center p-3 sm:p-4">
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-${stat.color}-100 dark:bg-${stat.color}-900 rounded-xl flex items-center justify-center mx-auto mb-2 sm:mb-3`}>
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 text-${stat.color}-600 dark:text-${stat.color}-400`} />
                 </div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
+                <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
                   {stat.value}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                   {stat.label}
                 </div>
               </Card>
@@ -322,8 +339,8 @@ const BadgeGallery = () => {
       )}
 
       {/* Filters */}
-      <Card>
-        <div className="flex flex-col lg:flex-row gap-4">
+      <Card className="p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -331,16 +348,16 @@ const BadgeGallery = () => {
                 placeholder="Search badges..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 text-sm"
               />
             </div>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-0"
             >
               <option value="all">All Badges</option>
               <option value="unlocked">Unlocked</option>
@@ -350,7 +367,7 @@ const BadgeGallery = () => {
             <select
               value={filterRarity}
               onChange={(e) => setFilterRarity(e.target.value)}
-              className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-0"
             >
               <option value="all">All Rarities</option>
               <option value="common">Common</option>
@@ -386,14 +403,71 @@ const BadgeGallery = () => {
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredBadges.map((badge, index) => (
-            <BadgeTile
+            <motion.div
               key={badge.id}
-              badge={badge}
-              index={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="cursor-pointer"
               onClick={() => handleBadgeClick(badge)}
-            />
+            >
+              <Card className={`text-center p-4 sm:p-6 h-full transition-all duration-300 ${
+                badge.unlocked 
+                  ? 'bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-blue-900/20 border-blue-200 dark:border-blue-800' 
+                  : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+              }`}>
+                <div className="relative mb-4">
+                  <motion.div
+                    className={`text-4xl sm:text-5xl mb-2 ${
+                      badge.unlocked ? '' : 'grayscale opacity-50'
+                    }`}
+                    whileHover={badge.unlocked ? { rotate: [0, -10, 10, 0] } : {}}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {badge.icon}
+                  </motion.div>
+                  {badge.unlocked && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center"
+                    >
+                      <CheckCircle className="w-4 h-4 text-white" />
+                    </motion.div>
+                  )}
+                </div>
+                
+                <h3 className={`font-semibold text-sm sm:text-base mb-2 ${
+                  badge.unlocked ? 'text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
+                }`}>
+                  {badge.name}
+                </h3>
+                
+                <div className={`inline-flex px-2 py-1 rounded-full text-xs font-medium mb-3 ${
+                  badge.rarity === 'common' ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300' :
+                  badge.rarity === 'uncommon' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
+                  badge.rarity === 'rare' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300' :
+                  'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300'
+                }`}>
+                  {badge.rarity.charAt(0).toUpperCase() + badge.rarity.slice(1)}
+                </div>
+                
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  {badge.description}
+                </p>
+                
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  {badge.unlocked ? (
+                    <span className="text-green-600 dark:text-green-400 font-medium">✓ Unlocked</span>
+                  ) : (
+                    <span>{entryCount}/{badge.milestone} entries</span>
+                  )}
+                </div>
+              </Card>
+            </motion.div>
           ))}
         </div>
       )}
