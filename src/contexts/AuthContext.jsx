@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect } from 'react'
 import { toast } from 'react-hot-toast'
 import { reliableSync } from '@/api/reliableSync'
 import { realEmailService } from '@/api/realEmailService'
+import { supabaseService } from '@/api/supabaseClient'
 
 const AuthContext = createContext()
 
@@ -94,11 +95,31 @@ export const AuthProvider = ({ children }) => {
     try {
       setIsLoading(true)
       
-      // Login with reliable cloud sync
-      const user = await reliableSync.loginUser(credentials.identifier, credentials.password)
+      // Try login with email first, then username
+      let user = await reliableSync.loginUser(credentials.identifier, credentials.password)
+      
+      // If email login failed, try username login
+      if (!user) {
+        const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
+        user = users.find(u => 
+          u.username === credentials.identifier && u.password === credentials.password
+        )
+        
+        // Also try cloud with username
+        if (!user) {
+          try {
+            const cloudUsers = await supabaseService.getUserByEmail(credentials.identifier)
+            if (cloudUsers && cloudUsers.password === credentials.password) {
+              user = cloudUsers
+            }
+          } catch (e) {
+            // Continue with local fallback
+          }
+        }
+      }
       
       if (!user) {
-        throw new Error('Invalid credentials')
+        throw new Error('Invalid email/username or password')
       }
 
       // Sync user entries after login

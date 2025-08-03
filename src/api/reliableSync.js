@@ -23,11 +23,17 @@ export const reliableSync = {
     }
   },
 
-  // Login with cloud sync
-  async loginUser(email, password) {
+  // Login with cloud sync (supports email or username)
+  async loginUser(identifier, password) {
     try {
-      // Try cloud first
-      const cloudUser = await supabaseService.getUserByEmail(email)
+      // Try cloud first - check if it's email format
+      const isEmail = identifier.includes('@')
+      let cloudUser = null
+      
+      if (isEmail) {
+        cloudUser = await supabaseService.getUserByEmail(identifier)
+      }
+      
       if (cloudUser && cloudUser.password === password) {
         // Store locally for offline access
         localStorage.setItem('skillforge_user', JSON.stringify(cloudUser))
@@ -36,13 +42,17 @@ export const reliableSync = {
       
       // Fallback to local
       const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
-      const localUser = users.find(u => u.email === email && u.password === password)
+      const localUser = users.find(u => 
+        (u.email === identifier || u.username === identifier) && u.password === password
+      )
       return localUser
     } catch (error) {
       console.warn('Cloud login failed, trying local:', error)
       // Local fallback
       const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
-      return users.find(u => u.email === email && u.password === password)
+      return users.find(u => 
+        (u.email === identifier || u.username === identifier) && u.password === password
+      )
     }
   },
 
