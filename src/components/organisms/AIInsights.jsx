@@ -18,6 +18,57 @@ import { useAuth } from '@/contexts/AuthContext'
 import { userService } from '@/api/userService'
 import toast from 'react-hot-toast'
 
+// Typing indicator component
+const TypingIndicator = () => {
+  return (
+    <div className="flex justify-start">
+      <div className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-600 px-4 py-3 rounded-lg">
+        <div className="flex items-center space-x-1">
+          <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">AI is typing</span>
+          <div className="flex space-x-1">
+            <motion.div
+              className="w-2 h-2 bg-green-500 rounded-full"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0
+              }}
+            />
+            <motion.div
+              className="w-2 h-2 bg-green-500 rounded-full"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0.2
+              }}
+            />
+            <motion.div
+              className="w-2 h-2 bg-green-500 rounded-full"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0.4
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const AIInsights = () => {
   const { user } = useAuth()
   const [insights, setInsights] = useState('')
@@ -292,13 +343,7 @@ const AIInsights = () => {
               ))
             )}
             
-            {loading.chat && (
-              <div className="flex justify-start">
-                <div className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-600 px-4 py-2 rounded-lg">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                </div>
-              </div>
-            )}
+            {loading.chat && <TypingIndicator />}
           </div>
 
           {/* Chat Input */}
