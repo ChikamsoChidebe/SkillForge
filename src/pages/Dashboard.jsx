@@ -456,6 +456,8 @@ const Dashboard = () => {
           onSuccess={() => {
             setShowNewEntryModal(false)
             loadUserData() // Reload data after new entry
+            // Force re-render
+            window.location.reload()
           }} 
         />
       </Modal>

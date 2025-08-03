@@ -120,7 +120,13 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         category: 'tutorial',
         date: new Date().toISOString().split('T')[0]
       })
-      onSuccess?.()
+      // Trigger dashboard refresh
+      if (onSuccess) {
+        onSuccess()
+      } else {
+        // Force page refresh to show new entry
+        window.location.reload()
+      }
     } catch (error) {
       toast.error('Failed to record entry. Please try again.')
       console.error('Failed to record entry:', error)
