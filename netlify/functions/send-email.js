@@ -5,11 +5,22 @@ exports.handler = async (event, context) => {
 
   try {
     const { to_email, subject, message } = JSON.parse(event.body)
+    const apiKey = process.env.RESEND_API_KEY
+    
+    if (!apiKey) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ 
+          success: false, 
+          error: 'RESEND_API_KEY environment variable not set' 
+        })
+      }
+    }
     
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -30,7 +41,7 @@ exports.handler = async (event, context) => {
     } else {
       return {
         statusCode: 400,
-        body: JSON.stringify({ success: false, error: result.message })
+        body: JSON.stringify({ success: false, error: result.message || 'Email sending failed' })
       }
     }
   } catch (error) {
