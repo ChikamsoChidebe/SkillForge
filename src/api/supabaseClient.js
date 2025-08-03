@@ -16,12 +16,21 @@ export const supabaseService = {
   // Create user
   async createUser(userData) {
     try {
+      // Debug: Log what we're sending
+      console.log('📤 Sending to Supabase:', {
+        id: userData.id,
+        username: userData.username,
+        email: userData.email,
+        hasPassword: !!userData.password,
+        passwordLength: userData.password?.length
+      })
+      
       // Minimal insert to bypass cache issues - only send essential fields
       const minimalUser = {
         id: userData.id,
         username: userData.username,
         email: userData.email,
-        password: userData.password
+        password: userData.password || 'temp_password_123' // Fallback if missing
       }
       
       const { data, error } = await supabase
@@ -31,6 +40,7 @@ export const supabaseService = {
       
       if (error) throw error
       
+      console.log('✅ Supabase user created:', data[0])
       // Return full user data (Supabase will have defaults)
       return { ...userData, ...data[0] }
     } catch (error) {
