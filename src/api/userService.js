@@ -139,19 +139,24 @@ export const userService = {
         timestamp: new Date().toISOString()
       })
       
-      let transactionId
+      let transactionResult
       try {
-        transactionId = await hederaClient.recordEntry(memo)
+        transactionResult = await hederaClient.recordEntry(entryData)
       } catch (error) {
-        console.warn('Blockchain recording failed, using local ID:', error)
-        transactionId = `local_${Date.now()}`
+        console.warn('Blockchain recording failed, using local fallback:', error)
+        transactionResult = {
+          txHash: `local_${Date.now()}`,
+          status: 'LOCAL_FALLBACK',
+          timestamp: Date.now()
+        }
       }
       
       // Add entry with cloud sync
       const newEntry = await syncService.addEntryWithSync(userId, {
         ...entryData,
-        id: transactionId,
-        transactionId,
+        id: transactionResult.txHash,
+        transactionId: transactionResult.txHash,
+        blockchainStatus: transactionResult.status,
         date: entryData.date || new Date().toISOString()
       })
       
