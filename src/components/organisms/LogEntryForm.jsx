@@ -43,9 +43,9 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
       }
 
       // Save to localStorage
-      const existingEntries = JSON.parse(localStorage.getItem('devchain_entries') || '[]')
+      const existingEntries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
       existingEntries.push(entryData)
-      localStorage.setItem('devchain_entries', JSON.stringify(existingEntries))
+      localStorage.setItem('skillforge_entries', JSON.stringify(existingEntries))
       
       // Update user stats
       const newTotalEntries = currentUser.totalEntries + 1
@@ -60,8 +60,12 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         lastEntryDate: new Date().toISOString()
       })
 
-      // Add to blockchain
-      await addEntry(entryData)
+      // Add to blockchain (will use local fallback)
+      try {
+        await addEntry(entryData)
+      } catch (error) {
+        console.warn('Blockchain recording failed, but entry saved locally:', error)
+      }
       
       // Check for badge unlock
       const badgeUnlocked = checkBadgeUnlock(newTotalEntries)

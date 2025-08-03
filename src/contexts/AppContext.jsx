@@ -53,7 +53,7 @@ export function AppProvider({ children }) {
       dispatch({ type: 'SET_LOADING', payload: true })
       const user = await hederaClient.connectWallet()
       dispatch({ type: 'SET_USER', payload: user })
-      localStorage.setItem('devchain_user', JSON.stringify(user))
+      localStorage.setItem('skillforge_user', JSON.stringify(user))
     } catch (error) {
       console.error('Failed to connect wallet:', error)
       throw error
@@ -64,7 +64,7 @@ export function AppProvider({ children }) {
 
   const disconnectWallet = () => {
     dispatch({ type: 'SET_USER', payload: null })
-    localStorage.removeItem('devchain_user')
+    localStorage.removeItem('skillforge_user')
   }
 
   const toggleModal = (modalName) => {
@@ -76,13 +76,13 @@ export function AppProvider({ children }) {
   }
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('devchain_user')
+    const savedUser = localStorage.getItem('skillforge_user')
     if (savedUser) {
       try {
         const user = JSON.parse(savedUser)
         dispatch({ type: 'SET_USER', payload: user })
       } catch (error) {
-        localStorage.removeItem('devchain_user')
+        localStorage.removeItem('skillforge_user')
       }
     }
   }, [])
