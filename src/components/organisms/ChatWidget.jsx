@@ -20,7 +20,7 @@ const ChatWidget = () => {
   const [chatHistory, setChatHistory] = useState([
     {
       role: 'assistant',
-      content: 'Hi! I\'m your DevChain AI assistant. I can help you with learning advice, blockchain questions, or anything about the platform. How can I help you today?'
+      content: 'Hi! I\'m your SkillForge AI assistant. I can help you with learning advice, blockchain questions, or anything about the platform. How can I help you today?'
     }
   ])
   const [isLoading, setIsLoading] = useState(false)
@@ -36,8 +36,8 @@ const ChatWidget = () => {
 
     try {
       const context = isAuthenticated 
-        ? 'User is logged into DevChain platform' 
-        : 'User is browsing DevChain website'
+        ? 'User is logged into SkillForge platform' 
+        : 'User is browsing SkillForge website'
       
       const response = await groqService.chatWithAI(userMessage, context)
       setChatHistory(prev => [...prev, { role: 'assistant', content: response }])
@@ -96,7 +96,7 @@ const ChatWidget = () => {
             <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
               <div className="flex items-center space-x-2">
                 <Brain className="w-5 h-5" />
-                <span className="font-semibold">DevChain AI</span>
+                <span className="font-semibold">SkillForge AI</span>
               </div>
               <div className="flex items-center space-x-1">
                 <button
