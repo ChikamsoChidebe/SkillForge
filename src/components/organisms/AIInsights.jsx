@@ -15,7 +15,7 @@ import Card from '@/components/atoms/Card'
 import Button from '@/components/atoms/Button'
 import { groqService } from '@/api/groqService'
 import { useAuth } from '@/contexts/AuthContext'
-import { userService } from '@/api/userService'
+import { supabaseService } from '@/api/supabaseClient'
 import toast from 'react-hot-toast'
 
 // Typing indicator component
@@ -91,7 +91,9 @@ const AIInsights = () => {
 
   const loadUserData = async () => {
     try {
-      const userEntries = await userService.getUserEntries(user.id)
+      console.log('🤖 AI Coach loading entries for user:', user.id)
+      const userEntries = await supabaseService.getUserEntries(user.id)
+      console.log('✅ AI Coach loaded', userEntries.length, 'entries from Supabase')
       setEntries(userEntries)
       
       // Calculate user profile stats

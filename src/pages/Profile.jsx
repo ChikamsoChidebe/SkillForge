@@ -31,7 +31,7 @@ import Card from '@/components/atoms/Card'
 import Badge from '@/components/atoms/Badge'
 import LoadingSpinner from '@/components/organisms/LoadingSpinner'
 import { useAuth } from '@/contexts/AuthContext'
-import { userService } from '@/api/userService'
+import { supabaseService } from '@/api/supabaseClient'
 import toast from 'react-hot-toast'
 
 const Profile = () => {
@@ -81,12 +81,23 @@ const Profile = () => {
   const loadUserData = async () => {
     try {
       setIsLoading(true)
-      const [userEntries, userBadges] = await Promise.all([
-        userService.getUserEntries(user.id),
-        userService.getUserBadges(user.id)
-      ])
+      
+      // Load entries from Supabase
+      const userEntries = await supabaseService.getUserEntries(user.id)
       setEntries(userEntries)
-      setBadges(userBadges)
+      
+      // Generate badges based on entry count
+      const badgeThresholds = [
+        { id: 1, threshold: 1, name: 'First Steps', unlocked: userEntries.length >= 1, icon: '🎯', description: 'Recorded your first learning milestone' },
+        { id: 2, threshold: 5, name: 'Learning Streak', unlocked: userEntries.length >= 5, icon: '🔥', description: 'Completed 5 learning milestones' },
+        { id: 3, threshold: 10, name: 'Knowledge Builder', unlocked: userEntries.length >= 10, icon: '🏢', description: 'Reached 10 learning milestones' },
+        { id: 4, threshold: 20, name: 'Learning Master', unlocked: userEntries.length >= 20, icon: '👑', description: 'Achieved 20 learning milestones' },
+        { id: 5, threshold: 50, name: 'Dedicated Learner', unlocked: userEntries.length >= 50, icon: '🌟', description: 'Completed 50 learning milestones' },
+        { id: 6, threshold: 100, name: 'Learning Legend', unlocked: userEntries.length >= 100, icon: '🏆', description: 'Reached 100 learning milestones' }
+      ]
+      setBadges(badgeThresholds)
+      
+      console.log('✅ Profile loaded:', userEntries.length, 'entries,', badgeThresholds.filter(b => b.unlocked).length, 'badges')
     } catch (error) {
       console.error('Failed to load user data:', error)
     } finally {

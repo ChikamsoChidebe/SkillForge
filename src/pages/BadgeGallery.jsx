@@ -25,10 +25,9 @@ import Card from '@/components/atoms/Card'
 import Badge from '@/components/atoms/Badge'
 import BadgeTile from '@/components/molecules/BadgeTile'
 import Modal from '@/components/molecules/Modal'
-import { useBadges, useMintBadge, useCheckBadgeEligibility } from '@/hooks/useBadges'
-import { useEntries } from '@/hooks/useEntries'
 import { useAuth } from '@/contexts/AuthContext'
-import ProgressCoach from '@/components/organisms/ProgressCoach'
+import { supabaseService } from '@/api/supabaseClient'
+import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
 const BadgeGallery = () => {
@@ -40,11 +39,48 @@ const BadgeGallery = () => {
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [claimableBadge, setClaimableBadge] = useState(null)
 
-  const { isAuthenticated } = useAuth()
-  const { data: badges = [], isLoading: badgesLoading } = useBadges()
-  const { data: entries = [] } = useEntries()
-  const { eligibleBadges, entryCount } = useCheckBadgeEligibility()
-  const mintBadgeMutation = useMintBadge()
+  const { isAuthenticated, user } = useAuth()
+  const [badges, setBadges] = useState([])
+  const [entries, setEntries] = useState([])
+  const [badgesLoading, setBadgesLoading] = useState(true)
+  const [entryCount, setEntryCount] = useState(0)
+  const [eligibleBadges, setEligibleBadges] = useState([])
+  
+  useEffect(() => {
+    if (user) {
+      loadUserData()
+    }
+  }, [user])
+  
+  const loadUserData = async () => {
+    try {
+      setBadgesLoading(true)
+      
+      // Load entries from Supabase
+      const userEntries = await supabaseService.getUserEntries(user.id)
+      setEntries(userEntries)
+      setEntryCount(userEntries.length)
+      
+      // Generate badges based on entry count
+      const badgeThresholds = [
+        { id: 1, milestone: 1, name: 'First Steps', unlocked: userEntries.length >= 1, icon: '🎯', description: 'Recorded your first learning milestone', rarity: 'common' },
+        { id: 2, milestone: 5, name: 'Learning Streak', unlocked: userEntries.length >= 5, icon: '🔥', description: 'Completed 5 learning milestones', rarity: 'uncommon' },
+        { id: 3, milestone: 10, name: 'Knowledge Builder', unlocked: userEntries.length >= 10, icon: '🏢', description: 'Reached 10 learning milestones', rarity: 'rare' },
+        { id: 4, milestone: 20, name: 'Learning Master', unlocked: userEntries.length >= 20, icon: '👑', description: 'Achieved 20 learning milestones', rarity: 'legendary' },
+        { id: 5, milestone: 50, name: 'Dedicated Learner', unlocked: userEntries.length >= 50, icon: '🌟', description: 'Completed 50 learning milestones', rarity: 'legendary' },
+        { id: 6, milestone: 100, name: 'Learning Legend', unlocked: userEntries.length >= 100, icon: '🏆', description: 'Reached 100 learning milestones', rarity: 'legendary' }
+      ]
+      
+      setBadges(badgeThresholds)
+      setEligibleBadges(badgeThresholds.filter(badge => badge.unlocked && !badge.claimed))
+      
+      console.log('✅ Badges loaded:', userEntries.length, 'entries,', badgeThresholds.filter(b => b.unlocked).length, 'badges unlocked')
+    } catch (error) {
+      console.error('Failed to load badge data:', error)
+    } finally {
+      setBadgesLoading(false)
+    }
+  }
 
   // Filter badges
   const filteredBadges = useMemo(() => {
@@ -115,15 +151,11 @@ const BadgeGallery = () => {
     if (!claimableBadge) return
 
     try {
-      await mintBadgeMutation.mutateAsync({
-        milestone: claimableBadge.milestone,
-        metadata: {
-          name: claimableBadge.name,
-          description: claimableBadge.description,
-          rarity: claimableBadge.rarity,
-          icon: claimableBadge.icon
-        }
-      })
+      // Mark badge as claimed (in a real app, this would mint NFT)
+      setBadges(prev => prev.map(b => 
+        b.id === claimableBadge.id ? { ...b, claimed: true } : b
+      ))
+      setEligibleBadges(prev => prev.filter(b => b.id !== claimableBadge.id))
       
       setShowClaimModal(false)
       setClaimableBadge(null)
@@ -241,12 +273,7 @@ const BadgeGallery = () => {
         </motion.div>
       </div>
 
-      {/* Progress Coach */}
-      <ProgressCoach 
-        stats={stats}
-        nextBadge={nextBadge}
-        onAddEntry={() => window.location.href = '/log-entry'}
-      />
+
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -328,7 +355,6 @@ const BadgeGallery = () => {
                 key={badge.id}
                 size="sm"
                 onClick={() => handleClaimBadge(badge)}
-                loading={mintBadgeMutation.isLoading}
               >
                 <Trophy className="w-4 h-4 mr-2" />
                 Claim {badge.name}
@@ -606,13 +632,13 @@ const BadgeGallery = () => {
                 variant="outline"
                 onClick={() => setShowClaimModal(false)}
                 className="flex-1"
-                disabled={mintBadgeMutation.isLoading}
+
               >
                 Cancel
               </Button>
               <Button
                 onClick={confirmClaimBadge}
-                loading={mintBadgeMutation.isLoading}
+
                 className="flex-1"
               >
                 <Award className="w-4 h-4 mr-2" />
