@@ -66,12 +66,24 @@ export const supabaseService = {
     }
   },
 
-  // Update user
+  // Update user (only essential fields)
   async updateUser(userId, updates) {
     try {
+      // Only update fields that exist in database
+      const allowedUpdates = {}
+      if (updates.username) allowedUpdates.username = updates.username
+      if (updates.email) allowedUpdates.email = updates.email
+      if (updates.password) allowedUpdates.password = updates.password
+      
+      // Skip if no valid updates
+      if (Object.keys(allowedUpdates).length === 0) {
+        console.log('No valid database fields to update')
+        return null
+      }
+      
       const { data, error } = await supabase
         .from('users')
-        .update(updates)
+        .update(allowedUpdates)
         .eq('id', userId)
         .select()
       
@@ -86,17 +98,14 @@ export const supabaseService = {
   // Create entry
   async createEntry(entryData) {
     try {
-      // Map camelCase to snake_case for database
+      // Only use essential columns that exist in database
       const dbEntry = {
         id: entryData.id,
-        userid: entryData.userId,  // Map userId to userid
+        userid: entryData.userId,
         title: entryData.title,
         description: entryData.description,
         category: entryData.category,
-        date: entryData.date,
-        author: entryData.author,
-        transaction_id: entryData.transactionId,
-        blockchain_status: entryData.blockchainStatus
+        date: entryData.date
       }
       
       const { data, error } = await supabase
@@ -106,12 +115,10 @@ export const supabaseService = {
       
       if (error) throw error
       
-      // Map back to camelCase for frontend
-      const result = data[0]
       return {
         ...entryData,
-        id: result.id,
-        createdAt: result.createdat
+        id: data[0].id,
+        createdAt: data[0].createdat || new Date().toISOString()
       }
     } catch (error) {
       console.error('Supabase create entry error:', error)

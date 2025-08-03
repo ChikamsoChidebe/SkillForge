@@ -1,110 +1,49 @@
+import { productionService } from './productionService'
 import { supabaseService } from './supabaseClient'
 
 export const reliableSync = {
-  // Create user with cloud sync
+  // Create user with local-first approach
   async createUser(userData) {
+    // Always save locally first
+    const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
+    users.push(userData)
+    localStorage.setItem('skillforge_users', JSON.stringify(users))
+    
+    // Try cloud sync in background
     try {
-      // Cloud-first approach for cross-device sync
-      const cloudUser = await supabaseService.createUser(userData)
-      console.log('✅ User created in cloud database')
-      
-      // Store locally as backup
-      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
-      users.push(cloudUser)
-      localStorage.setItem('skillforge_users', JSON.stringify(users))
-      
-      return cloudUser
+      await supabaseService.createUser(userData)
+      console.log('✅ User synced to cloud')
     } catch (error) {
-      console.warn('⚠️ Cloud user creation failed, using local fallback:', error.message)
-      
-      // Local fallback
-      const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
-      users.push(userData)
-      localStorage.setItem('skillforge_users', JSON.stringify(users))
-      
-      return userData
-    }
-  },
-
-  // Login with cloud sync (supports email or username)
-  async loginUser(identifier, password) {
-    try {
-      // Cloud-first login for cross-device sync
-      const cloudUser = await supabaseService.getUserByEmail(identifier)
-      if (cloudUser && cloudUser.password === password) {
-        console.log('✅ Cloud login successful - cross-device sync enabled')
-        
-        // Update local cache
-        localStorage.setItem('skillforge_user', JSON.stringify(cloudUser))
-        return cloudUser
-      }
-      
-      // If email lookup failed, user might not exist in cloud yet
-      console.log('User not found in cloud, checking local...')
-    } catch (error) {
-      console.warn('⚠️ Cloud login failed, trying local fallback:', error.message)
+      console.log('⚠️ Cloud sync failed, user saved locally')
     }
     
-    // Local fallback for users not yet synced to cloud
+    return userData
+  },
+
+  // Login with local-first approach
+  async loginUser(identifier, password) {
     const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
-    const localUser = users.find(u => 
+    const user = users.find(u => 
       (u.email === identifier || u.username === identifier) && u.password === password
     )
     
-    if (localUser) {
-      console.log('📱 Local login successful - limited to this device')
+    if (user) {
+      console.log('✅ Login successful')
+      return user
     }
     
-    return localUser
+    return null
   },
 
-  // Create entry with cloud sync
+  // Create entry with production service
   async createEntry(entryData) {
-    try {
-      // Cloud-first approach for cross-device sync
-      const cloudEntry = await supabaseService.createEntry(entryData)
-      console.log('✅ Entry saved to cloud - will sync across devices')
-      
-      // Update local cache
-      const entries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
-      entries.unshift(cloudEntry)
-      localStorage.setItem('skillforge_entries', JSON.stringify(entries))
-      
-      return cloudEntry
-    } catch (error) {
-      console.warn('⚠️ Entry cloud sync failed, saving locally only:', error.message)
-      
-      // Local fallback
-      const entries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
-      entries.unshift(entryData)
-      localStorage.setItem('skillforge_entries', JSON.stringify(entries))
-      
-      return entryData
-    }
+    return await productionService.createEntry(entryData)
   },
 
-  // Get entries with cloud sync
+  // Get entries with production service
   async getUserEntries(userId) {
-    try {
-      // Cloud-first approach for latest cross-device data
-      const cloudEntries = await supabaseService.getUserEntries(userId)
-      console.log(`✅ Loaded ${cloudEntries.length} entries from cloud database`)
-      
-      // Update local cache with cloud data
-      const allLocalEntries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
-      const otherUsersEntries = allLocalEntries.filter(e => e.userId !== userId)
-      const updatedEntries = [...otherUsersEntries, ...cloudEntries]
-      localStorage.setItem('skillforge_entries', JSON.stringify(updatedEntries))
-      
-      return cloudEntries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    } catch (error) {
-      console.warn('⚠️ Cloud entries failed, using local cache:', error.message)
-      
-      // Local fallback
-      const localEntries = JSON.parse(localStorage.getItem('skillforge_entries') || '[]')
-      const userEntries = localEntries.filter(e => e.userId === userId)
-      
-      return userEntries.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    }
+    const entries = await productionService.getUserEntries(userId)
+    console.log(`✅ Loaded ${entries.length} entries`)
+    return entries
   }
 }

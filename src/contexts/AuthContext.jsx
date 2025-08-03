@@ -175,27 +175,13 @@ export const AuthProvider = ({ children }) => {
   }
 
   const updateUser = async (updates) => {
-    const updatedUser = { ...user, ...updates }
+    const { productionService } = await import('@/api/productionService')
+    const updatedUser = await productionService.updateUser(user.id, updates)
     
-    try {
-      // Try to update in cloud database first
-      await supabaseService.updateUser(user.id, updates)
-      console.log('✅ User updated in cloud database')
-    } catch (error) {
-      console.warn('⚠️ Cloud user update failed, using local only:', error.message)
+    if (updatedUser) {
+      setUser(updatedUser)
+      console.log('✅ User updated successfully')
     }
-    
-    // Update in local users list
-    const existingUsers = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
-    const userIndex = existingUsers.findIndex(u => u.id === user.id)
-    if (userIndex !== -1) {
-      existingUsers[userIndex] = updatedUser
-      localStorage.setItem('skillforge_users', JSON.stringify(existingUsers))
-    }
-    
-    // Update current user
-    localStorage.setItem('skillforge_user', JSON.stringify(updatedUser))
-    setUser(updatedUser)
   }
 
   const value = {
