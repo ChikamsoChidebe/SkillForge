@@ -130,16 +130,31 @@ export const AuthProvider = ({ children }) => {
       setIsLoading(true)
       console.log('🔑 Attempting login for:', credentials.identifier)
       
-      // Try login with reliable sync
-      let user = await reliableSync.loginUser(credentials.identifier, credentials.password)
+      let user = null
       
+      // First, try Supabase database
+      try {
+        console.log('💾 Checking Supabase database...')
+        const cloudUser = await supabaseService.getUserByEmail(credentials.identifier)
+        if (cloudUser && cloudUser.password === credentials.password) {
+          user = cloudUser
+          console.log('✅ User found in Supabase database')
+        }
+      } catch (error) {
+        console.log('⚠️ Supabase check failed:', error.message)
+      }
+      
+      // If not found in Supabase, check localStorage
       if (!user) {
-        console.log('⚠️ User not found, checking local storage')
+        console.log('💾 Checking localStorage...')
         const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
         user = users.find(u => 
           (u.email === credentials.identifier || u.username === credentials.identifier) && 
           u.password === credentials.password
         )
+        if (user) {
+          console.log('✅ User found in localStorage')
+        }
       }
       
       if (!user) {
