@@ -8,6 +8,9 @@ import { AuthProvider } from '@/contexts/AuthContext'
 import Navbar from '@/components/organisms/Navbar'
 import Footer from '@/components/organisms/Footer'
 import ProtectedRoute from '@/components/organisms/ProtectedRoute'
+import ErrorBoundary from '@/components/organisms/ErrorBoundary'
+import OfflineIndicator from '@/components/organisms/OfflineIndicator'
+import UpdateNotification from '@/components/organisms/UpdateNotification'
 import Dashboard from '@/pages/Dashboard'
 import LogEntry from '@/pages/LogEntry'
 import BadgeGallery from '@/pages/BadgeGallery'
@@ -19,6 +22,7 @@ import Landing from '@/pages/Landing'
 import Auth from '@/pages/Auth'
 import WalletConnect from '@/pages/WalletConnect'
 import AICoach from '@/pages/AICoach'
+import NotFound from '@/pages/NotFound'
 import ChatWidget from '@/components/organisms/ChatWidget'
 
 const queryClient = new QueryClient({
@@ -51,10 +55,13 @@ function AppContent() {
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <Footer />
       <ChatWidget />
+      <OfflineIndicator />
+      <UpdateNotification />
       <Toaster
         position="top-right"
         toastOptions={{
@@ -78,18 +85,20 @@ function AppContent() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <AuthProvider>
-          <AppProvider>
-            <Router>
-              <AppContent />
-            </Router>
-          </AppProvider>
-        </AuthProvider>
-      </ThemeProvider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <AuthProvider>
+            <AppProvider>
+              <Router>
+                <AppContent />
+              </Router>
+            </AppProvider>
+          </AuthProvider>
+        </ThemeProvider>
+        <ReactQueryDevtools initialIsOpen={false} />
+      </QueryClientProvider>
+    </ErrorBoundary>
   )
 }
 
