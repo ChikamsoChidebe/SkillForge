@@ -111,7 +111,7 @@ export const supabaseService = {
       return {
         ...entryData,
         id: result.id,
-        createdAt: result.created_at
+        createdAt: result.createdat
       }
     } catch (error) {
       console.error('Supabase create entry error:', error)
@@ -125,8 +125,8 @@ export const supabaseService = {
       const { data, error } = await supabase
         .from('entries')
         .select('*')
-        .eq('userid', userId)  // Fixed: database column is lowercase
-        .order('created_at', { ascending: false })  // Fixed: database column is snake_case
+        .eq('userid', userId)
+        .order('createdat', { ascending: false })
       
       if (error) throw error
       return data || []
