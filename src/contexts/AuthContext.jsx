@@ -49,14 +49,31 @@ export const AuthProvider = ({ children }) => {
         allKeys: Object.keys(userData)
       })
       
-      // Check if user already exists
+      // Check if user already exists (both local and cloud)
       const existingUsers = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
-      const userExists = existingUsers.find(u => 
+      const localUserExists = existingUsers.find(u => 
         u.email === userData.email || u.username === userData.username
       )
       
-      if (userExists) {
-        throw new Error('User already exists with this email or username')
+      // Also check cloud database
+      let cloudUserExists = null
+      try {
+        cloudUserExists = await supabaseService.getUserByEmail(userData.email)
+      } catch (e) {
+        // Cloud check failed, continue with local check only
+      }
+      
+      if (localUserExists) {
+        if (localUserExists.email === userData.email) {
+          throw new Error('An account with this email already exists. Please use a different email or try logging in.')
+        }
+        if (localUserExists.username === userData.username) {
+          throw new Error('This username is already taken. Please choose a different username.')
+        }
+      }
+      
+      if (cloudUserExists) {
+        throw new Error('An account with this email already exists. Please try logging in instead.')
       }
 
       // Create new user
