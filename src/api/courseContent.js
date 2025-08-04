@@ -91,6 +91,16 @@ In the next lesson, we'll set up your development environment and create your fi
                 question: 'What is the Virtual DOM?',
                 options: ['A real DOM element', 'A JavaScript representation of the DOM', 'A CSS framework', 'A database'],
                 correct: 1
+              },
+              {
+                question: 'Which of the following is a key feature of React?',
+                options: ['Component-based architecture', 'Two-way data binding', 'Built-in database', 'Server-side rendering only'],
+                correct: 0
+              },
+              {
+                question: 'Which company maintains React?',
+                options: ['Facebook/Meta', 'Google', 'Amazon', 'Netflix'],
+                correct: 0
               }
             ]
           },
@@ -198,6 +208,16 @@ Your development environment is now ready! In the next lesson, we'll explore JSX
                 question: 'Which file is the entry point of a React application?',
                 options: ['App.js', 'index.html', 'index.js', 'main.js'],
                 correct: 2
+              },
+              {
+                question: 'Which tool is recommended for code formatting in React projects?',
+                options: ['Prettier', 'Webpack', 'Babel', 'Docker'],
+                correct: 0
+              },
+              {
+                question: 'Which folder typically contains the main React components?',
+                options: ['src/', 'public/', 'node_modules/', 'dist/'],
+                correct: 0
               }
             ]
           },
@@ -324,6 +344,16 @@ JSX makes React components more readable and allows you to leverage the full pow
                 question: 'How do you embed JavaScript expressions in JSX?',
                 options: ['{{ }}', '{ }', '[ ]', '( )'],
                 correct: 1
+              },
+              {
+                question: 'Which of the following is NOT valid JSX syntax?',
+                options: ['Multiple parent elements', 'Single parent element', 'React Fragment', 'Self-closing tags'],
+                correct: 0
+              },
+              {
+                question: 'What is the main benefit of using JSX in React?',
+                options: ['Makes UI code more readable', 'Adds CSS support', 'Improves server performance', 'Enables database access'],
+                correct: 0
               }
             ]
           },
@@ -419,6 +449,16 @@ Congratulations! You've created your first React components. In the next lesson,
                 question: 'Which is the correct way to define a function component?',
                 options: ['function myComponent()', 'function MyComponent()', 'Function MyComponent()', 'component MyComponent()'],
                 correct: 1
+              },
+              {
+                question: 'What is a best practice for React components?',
+                options: ['One component per file', 'All logic in one file', 'No naming conventions', 'Avoid using props'],
+                correct: 0
+              },
+              {
+                question: 'How do you use a component in another file?',
+                options: ['Import it', 'Copy-paste code', 'Declare it globally', 'Use window object'],
+                correct: 0
               }
             ]
           }
@@ -519,6 +559,16 @@ Props are fundamental to React's component architecture. They enable you to crea
                 question: 'How do you destructure props in a function component?',
                 options: ['function Component(props)', 'function Component({prop1, prop2})', 'function Component[prop1, prop2]', 'function Component<prop1, prop2>'],
                 correct: 1
+              },
+              {
+                question: 'What is a best practice for naming props?',
+                options: ['Use descriptive names', 'Use single letters', 'Use numbers', 'No naming needed'],
+                correct: 0
+              },
+              {
+                question: 'What should you avoid doing with props?',
+                options: ['Mutating them', 'Passing them', 'Reading them', 'Destructuring them'],
+                correct: 0
               }
             ]
           }
@@ -653,6 +703,16 @@ Python's data structures form the foundation for all data science operations. Ma
                 question: 'What is a list comprehension?',
                 options: ['A way to understand lists', 'A concise way to create lists', 'A list documentation', 'A list method'],
                 correct: 1
+              },
+              {
+                question: 'Which method adds an element to a list?',
+                options: ['append()', 'add()', 'insert()', 'push()'],
+                correct: 0
+              },
+              {
+                question: 'What is the output of [x**2 for x in range(3)]?',
+                options: ['[1, 4, 9]', '[0, 1, 4]', '[0, 1, 4, 9]', '[1, 2, 3]'],
+                correct: 1
               }
             ]
           },
@@ -767,6 +827,16 @@ NumPy is the foundation that makes Python a powerful language for data science. 
                 question: 'What does vectorization mean in NumPy?',
                 options: ['Creating vectors', 'Operations on entire arrays without loops', 'Array direction', 'Vector graphics'],
                 correct: 1
+              },
+              {
+                question: 'Which function creates an array with a range of values?',
+                options: ['np.arange()', 'np.range()', 'np.linspace()', 'np.array()'],
+                correct: 0
+              },
+              {
+                question: 'Which NumPy function returns the mean of an array?',
+                options: ['np.mean()', 'np.average()', 'np.median()', 'np.sum()'],
+                correct: 0
               }
             ]
           },
@@ -921,6 +991,16 @@ Pandas makes data manipulation intuitive and powerful, allowing you to clean, tr
                 question: 'What does df.groupby() do?',
                 options: ['Groups rows by column values', 'Groups columns', 'Sorts data', 'Filters data'],
                 correct: 0
+              },
+              {
+                question: 'Which pandas object is used for 1D labeled data?',
+                options: ['Series', 'DataFrame', 'Panel', 'Array'],
+                correct: 0
+              },
+              {
+                question: 'Which method fills missing values in a DataFrame?',
+                options: ['fillna()', 'dropna()', 'replace()', 'fill()'],
+                correct: 0
               }
             ]
           }
@@ -1065,6 +1145,16 @@ Blockchain technology is transforming industries and creating new possibilities 
                 question: 'What is the purpose of a nonce in a block?',
                 options: ['Store data', 'Link blocks', 'Mining/proof of work', 'Encrypt transactions'],
                 correct: 2
+              },
+              {
+                question: 'Which of the following is NOT a type of blockchain network?',
+                options: ['Public', 'Private', 'Consortium', 'Centralized'],
+                correct: 3
+              },
+              {
+                question: 'What is the main function of cryptographic hashing in blockchain?',
+                options: ['Securing data', 'Sorting data', 'Compressing data', 'Encrypting data'],
+                correct: 0
               }
             ]
           },
@@ -1207,6 +1297,16 @@ Hedera provides a robust platform for building enterprise-grade decentralized ap
                 question: 'Which Hedera service is used for consensus and ordering?',
                 options: ['Smart Contracts', 'Token Service', 'Consensus Service (HCS)', 'File Service'],
                 correct: 2
+              },
+              {
+                question: 'What is a key advantage of Hedera Hashgraph?',
+                options: ['High throughput', 'High energy usage', 'Centralized control', 'Slow transactions'],
+                correct: 0
+              },
+              {
+                question: 'Which programming language is used for Hedera smart contracts?',
+                options: ['Solidity', 'Python', 'Java', 'C++'],
+                correct: 0
               }
             ]
           },
@@ -1422,6 +1522,16 @@ Smart contracts on Hedera combine the power of Ethereum compatibility with the e
                 question: 'What is the purpose of the modifier keyword in Solidity?',
                 options: ['Change variable types', 'Add access control', 'Import libraries', 'Define events'],
                 correct: 1
+              },
+              {
+                question: 'What is an event in Solidity?',
+                options: ['A way to log data', 'A function', 'A variable', 'A contract'],
+                correct: 0
+              },
+              {
+                question: 'What is a best practice for smart contract security?',
+                options: ['Validate all inputs', 'Ignore edge cases', 'Use old Solidity versions', 'Avoid testing'],
+                correct: 0
               }
             ]
           }
