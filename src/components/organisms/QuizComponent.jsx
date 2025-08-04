@@ -24,16 +24,17 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
   const [score, setScore] = useState(0)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [timeLeft, setTimeLeft] = useState(300) // 5 minutes
+  const [timeTaken, setTimeTaken] = useState(null)
   const [quizStarted, setQuizStarted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
+  let timerRef = null;
   const handleStartQuiz = () => {
     setQuizStarted(true)
-    // Start timer
-    const timer = setInterval(() => {
+    timerRef = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
-          clearInterval(timer)
+          clearInterval(timerRef)
           handleSubmitQuiz()
           return 0
         }
@@ -63,7 +64,8 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
 
   const handleSubmitQuiz = async () => {
     setSubmitting(true)
-    
+    if (timerRef) clearInterval(timerRef);
+    setTimeTaken(300 - timeLeft);
     try {
       let correct = 0
       lesson.questions.forEach((question, index) => {
@@ -207,7 +209,6 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
 
   if (showResults) {
     const passed = score >= 70
-    
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -265,7 +266,7 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
               <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
                 <div className="text-sm text-gray-600 dark:text-gray-400">Time Taken</div>
                 <div className="text-2xl font-bold text-blue-600">
-                  {formatTime(300 - timeLeft)}
+                  {formatTime(timeTaken !== null ? timeTaken : 300 - timeLeft)}
                 </div>
               </div>
             </motion.div>
