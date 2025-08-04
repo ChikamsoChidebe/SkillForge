@@ -2,7 +2,15 @@ import { Client, AccountId, PrivateKey, TransferTransaction, Hbar } from "@hashg
 import dotenv from "dotenv";
 dotenv.config();
 
-// Use environment variables for credentials
+
+// Debug: Print env variables to help diagnose issues
+console.log('Loaded VITE_HEDERA_ACCOUNT_ID:', process.env.VITE_HEDERA_ACCOUNT_ID);
+console.log('Loaded VITE_HEDERA_PRIVATE_KEY:', process.env.VITE_HEDERA_PRIVATE_KEY);
+
+if (!process.env.VITE_HEDERA_ACCOUNT_ID || !process.env.VITE_HEDERA_PRIVATE_KEY) {
+  throw new Error('Missing Hedera credentials in .env file. Please check VITE_HEDERA_ACCOUNT_ID and VITE_HEDERA_PRIVATE_KEY.');
+}
+
 const operatorId = AccountId.fromString(process.env.VITE_HEDERA_ACCOUNT_ID);
 const operatorKey = PrivateKey.fromString(process.env.VITE_HEDERA_PRIVATE_KEY);
 
