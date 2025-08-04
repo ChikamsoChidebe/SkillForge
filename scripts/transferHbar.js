@@ -3,16 +3,17 @@ import dotenv from "dotenv";
 dotenv.config();
 
 
-// Debug: Print env variables to help diagnose issues
-console.log('Loaded VITE_HEDERA_ACCOUNT_ID:', process.env.VITE_HEDERA_ACCOUNT_ID);
-console.log('Loaded VITE_HEDERA_PRIVATE_KEY:', process.env.VITE_HEDERA_PRIVATE_KEY);
 
-if (!process.env.VITE_HEDERA_ACCOUNT_ID || !process.env.VITE_HEDERA_PRIVATE_KEY) {
-  throw new Error('Missing Hedera credentials in .env file. Please check VITE_HEDERA_ACCOUNT_ID and VITE_HEDERA_PRIVATE_KEY.');
+// Debug: Print env variables to help diagnose issues
+console.log('Loaded HEDERA_ACCOUNT_ID:', process.env.HEDERA_ACCOUNT_ID);
+console.log('Loaded HEDERA_PRIVATE_KEY:', process.env.HEDERA_PRIVATE_KEY);
+
+if (!process.env.HEDERA_ACCOUNT_ID || !process.env.HEDERA_PRIVATE_KEY) {
+  throw new Error('Missing Hedera credentials in .env file. Please check HEDERA_ACCOUNT_ID and HEDERA_PRIVATE_KEY.');
 }
 
-const operatorId = AccountId.fromString(process.env.VITE_HEDERA_ACCOUNT_ID);
-const operatorKey = PrivateKey.fromString(process.env.VITE_HEDERA_PRIVATE_KEY);
+const operatorId = AccountId.fromString(process.env.HEDERA_ACCOUNT_ID);
+const operatorKey = PrivateKey.fromString(process.env.HEDERA_PRIVATE_KEY);
 
 const client = Client.forTestnet().setOperator(operatorId, operatorKey);
 
