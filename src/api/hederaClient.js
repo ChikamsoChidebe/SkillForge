@@ -7,7 +7,8 @@ import {
   TokenCreateTransaction,
   TokenType,
   TokenSupplyType,
-  Hbar
+  Hbar,
+  AccountBalanceQuery
 } from '@hashgraph/sdk'
 
 class HederaClient {
@@ -55,7 +56,9 @@ class HederaClient {
 
   async getAccountBalance() {
     try {
-      const balance = await this.client.getAccountBalance(this.operatorId)
+      const balance = await new AccountBalanceQuery()
+        .setAccountId(this.operatorId)
+        .execute(this.client)
       return balance.hbars.toString()
     } catch (error) {
       console.error('Failed to get account balance:', error)
