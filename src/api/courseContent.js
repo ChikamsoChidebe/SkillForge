@@ -101,6 +101,11 @@ In the next lesson, we'll set up your development environment and create your fi
                 question: 'Which company maintains React?',
                 options: ['Facebook/Meta', 'Google', 'Amazon', 'Netflix'],
                 correct: 0
+              },
+              {
+                question: 'Which of these is NOT part of the React ecosystem?',
+                options: ['Redux', 'React Native', 'Django', 'React Router'],
+                correct: 2
               }
             ]
           },
@@ -217,6 +222,16 @@ Your development environment is now ready! In the next lesson, we'll explore JSX
               {
                 question: 'Which folder typically contains the main React components?',
                 options: ['src/', 'public/', 'node_modules/', 'dist/'],
+                correct: 0
+              },
+              {
+                question: 'What is the recommended extension for React component files?',
+                options: ['.jsx', '.js', '.ts', '.html'],
+                correct: 0
+              },
+              {
+                question: 'What is the main benefit of using a code editor like VS Code for React?',
+                options: ['Syntax highlighting and extensions', 'Runs code faster', 'Compiles React automatically', 'No benefit'],
                 correct: 0
               }
             ]
@@ -353,6 +368,16 @@ JSX makes React components more readable and allows you to leverage the full pow
               {
                 question: 'What is the main benefit of using JSX in React?',
                 options: ['Makes UI code more readable', 'Adds CSS support', 'Improves server performance', 'Enables database access'],
+                correct: 0
+              },
+              {
+                question: 'Which symbol is used to embed JavaScript in JSX?',
+                options: ['{}', '()', '[]', '<>'],
+                correct: 0
+              },
+              {
+                question: 'What is a React Fragment?',
+                options: ['A wrapper for multiple elements', 'A CSS class', 'A JavaScript function', 'A type of prop'],
                 correct: 0
               }
             ]
