@@ -18,8 +18,8 @@ const operatorKey = PrivateKey.fromString(process.env.HEDERA_PRIVATE_KEY);
 const client = Client.forTestnet().setOperator(operatorId, operatorKey);
 
 async function main() {
-  // Replace with the recipient's Hedera Account ID
-  const RECEIVER_ID = AccountId.fromString("0.0.6480000");
+  // Use your own account ID as the recipient for a test transfer
+  const RECEIVER_ID = AccountId.fromString(process.env.HEDERA_ACCOUNT_ID);
 
   const tx = await new TransferTransaction()
     .addHbarTransfer(operatorId, new Hbar(-1))
