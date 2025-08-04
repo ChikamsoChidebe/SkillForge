@@ -13,6 +13,7 @@ import {
   PlayIcon,
   UserPlusIcon
 } from 'lucide-react'
+import Icon from '@/components/atoms/Icon'
 import Button from '@/components/atoms/Button'
 import Card from '@/components/atoms/Card'
 import AuthModal from '@/components/organisms/AuthModal'
@@ -196,6 +197,144 @@ const Landing = () => {
               )
             })}
           </div>
+        </div>
+      </section>
+
+      {/* What's New Section */}
+      <section className="py-24 bg-gradient-to-br from-blue-50 via-purple-50 to-blue-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-gray-900">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-sm font-medium mb-4">
+              🚀 Latest Updates
+            </div>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-gray-100">
+              What's New in SkillForge
+            </h2>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              We've been busy enhancing your learning experience with powerful new features
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                icon: <Icon name="RiGraduationCapFill" pack="ri" size={36} color="#2563eb" />, // blue
+                title: 'Interactive Course System',
+                description: 'Complete structured courses with lessons, quizzes, and progress tracking across React, Python Data Science, and Blockchain Development.',
+                badge: 'New',
+                color: 'from-blue-500 to-cyan-500'
+              },
+              {
+                icon: <Icon name="MdQuiz" pack="md" size={36} color="#a21caf" />, // purple
+                title: 'Smart Quiz Engine',
+                description: 'Take interactive quizzes after every lesson with 70% passing requirement, timer, and instant feedback with detailed results.',
+                badge: 'Enhanced',
+                color: 'from-purple-500 to-pink-500'
+              },
+              {
+                icon: <Icon name="FaTrophy" pack="fa" size={36} color="#f59e42" />, // gold
+                title: 'Advanced Badge System',
+                description: 'Earn course completion badges, milestone achievements, and rarity-based rewards with animated notifications.',
+                badge: 'Upgraded',
+                color: 'from-yellow-500 to-orange-500'
+              },
+              {
+                icon: <Icon name="BsBarChartFill" pack="bs" size={36} color="#059669" />, // green
+                title: 'Comprehensive Analytics',
+                description: 'Track your learning progress with detailed statistics, course completion rates, quiz scores, and activity heatmaps.',
+                badge: 'New',
+                color: 'from-green-500 to-teal-500'
+              },
+              {
+                icon: <Icon name="MdSync" pack="md" size={36} color="#6366f1" />, // indigo
+                title: 'Cross-Device Sync',
+                description: 'Your progress syncs seamlessly across all devices with cloud-based storage and real-time updates.',
+                badge: 'Improved',
+                color: 'from-indigo-500 to-purple-500'
+              },
+              {
+                icon: <Icon name="HiOutlineTarget" pack="hi" size={36} color="#ef4444" />, // red
+                title: 'Personalized Learning',
+                description: 'AI-powered insights and recommendations based on your learning patterns and course performance.',
+                badge: 'Beta',
+                color: 'from-red-500 to-pink-500'
+              }
+            ].map((update, index) => (
+              <motion.div
+                key={update.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                viewport={{ once: true }}
+                className="group"
+              >
+                <Card hover className="h-full relative overflow-hidden">
+                  <div className="absolute top-4 right-4">
+                    <span className={`px-2 py-1 text-xs font-bold rounded-full text-white bg-gradient-to-r ${update.color}`}>
+                      {update.badge}
+                    </span>
+                  </div>
+                  
+                  <div className="text-center">
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-200">
+                    {update.icon}
+                  </div>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-gray-100">
+                      {update.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {update.description}
+                    </p>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mt-12"
+          >
+            <div className="inline-flex items-center space-x-4 bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+              <div className="flex -space-x-2">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+                <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center text-white font-bold text-sm">📚</div>
+                <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm">✨</div>
+              </div>
+              <div className="text-left">
+                <div className="font-semibold text-gray-900 dark:text-gray-100">3 Complete Courses Available</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">React • Python Data Science • Blockchain</div>
+              </div>
+              {isAuthenticated ? (
+                <Link to="/courses">
+                  <Button className="whitespace-nowrap">
+                    Explore Courses
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+              ) : (
+                <Button 
+                  className="whitespace-nowrap"
+                  onClick={() => {
+                    setAuthMode('register')
+                    setShowAuthModal(true)
+                  }}
+                >
+                  Start Learning
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              )}
+            </div>
+          </motion.div>
         </div>
       </section>
 

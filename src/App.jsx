@@ -7,7 +7,9 @@ import { AppProvider } from '@/contexts/AppContext'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { emailScheduler } from '@/utils/emailScheduler'
+import { initializeDemoData } from '@/utils/demoData'
 import Navbar from '@/components/organisms/Navbar'
+import Sidebar from '@/components/organisms/Sidebar'
 import Footer from '@/components/organisms/Footer'
 import ProtectedRoute from '@/components/organisms/ProtectedRoute'
 import ErrorBoundary from '@/components/organisms/ErrorBoundary'
@@ -25,8 +27,15 @@ import Landing from '@/pages/Landing'
 import Auth from '@/pages/Auth'
 import WalletConnect from '@/pages/WalletConnect'
 import AICoach from '@/pages/AICoach'
+import Courses from '@/pages/Courses'
+import CourseDetail from '@/pages/CourseDetail'
+import LessonView from '@/pages/LessonView'
+import Workshops from '@/pages/Workshops'
+import Community from '@/pages/Community'
+import Leaderboard from '@/pages/Leaderboard'
 import NotFound from '@/pages/NotFound'
 import ChatWidget from '@/components/organisms/ChatWidget'
+import BadgeNotificationManager from '@/components/organisms/BadgeNotificationManager'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -41,18 +50,29 @@ const queryClient = new QueryClient({
 
 function AppContent() {
   const location = useLocation()
+  const useSidebar = false // Set to true to use sidebar navigation
   
   return (
     <PageLoader>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-300 flex flex-col">
-        {location.pathname !== '/auth' && location.pathname !== '/wallet-connect' && <Navbar />}
-        <main className="flex-1">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-300 flex">
+        {useSidebar && location.pathname !== '/auth' && location.pathname !== '/wallet-connect' && <Sidebar />}
+        
+        <div className={`flex-1 flex flex-col ${useSidebar ? 'ml-0' : ''}`}>
+          {!useSidebar && location.pathname !== '/auth' && location.pathname !== '/wallet-connect' && <Navbar />}
+          
+          <main className={`flex-1 ${useSidebar ? 'p-6' : ''}`}>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/wallet-connect" element={<WalletConnect />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/log-entry" element={<ProtectedRoute><LogEntry /></ProtectedRoute>} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/courses/:courseId" element={<CourseDetail />} />
+            <Route path="/courses/:courseId/module/:moduleId/lesson/:lessonId" element={<ProtectedRoute><LessonView /></ProtectedRoute>} />
+            <Route path="/workshops" element={<Workshops />} />
+            <Route path="/community" element={<Community />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/badges" element={<ProtectedRoute><BadgeGallery /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/ai-coach" element={<ProtectedRoute><AICoach /></ProtectedRoute>} />
@@ -61,13 +81,17 @@ function AppContent() {
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </main>
-        <Footer />
+          </main>
+          
+          {!useSidebar && <Footer />}
+        </div>
+        
         <ChatWidget />
+        <BadgeNotificationManager />
         <OfflineIndicator />
         <UpdateNotification />
         <Toaster
-          position="top-right"
+          position={useSidebar ? "top-center" : "top-right"}
           toastOptions={{
             duration: 4000,
             style: {
@@ -91,6 +115,7 @@ function AppContent() {
 function App() {
   React.useEffect(() => {
     emailScheduler.init()
+    initializeDemoData() // Initialize demo data for better user experience
   }, [])
 
   return (

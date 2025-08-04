@@ -22,7 +22,15 @@ import {
   Github,
   Twitter,
   Linkedin,
-  Globe
+  Globe,
+  GraduationCap,
+  Brain,
+  CheckCircle,
+  BarChart3,
+  Zap,
+  Award,
+  Star,
+  Clock
 } from 'lucide-react'
 import { format, subDays, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns'
 import Button from '@/components/atoms/Button'
@@ -32,6 +40,7 @@ import Badge from '@/components/atoms/Badge'
 import LoadingSpinner from '@/components/organisms/LoadingSpinner'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabaseService } from '@/api/supabaseClient'
+import { courseService } from '@/api/courseService'
 import toast from 'react-hot-toast'
 
 const Profile = () => {
@@ -70,6 +79,9 @@ const Profile = () => {
   }, [user, profileData.displayName])
   const [entries, setEntries] = useState([])
   const [badges, setBadges] = useState([])
+  const [courseStats, setCourseStats] = useState(null)
+  const [userBadges, setUserBadges] = useState([])
+  const [enrolledCourses, setEnrolledCourses] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   
   useEffect(() => {
@@ -96,6 +108,17 @@ const Profile = () => {
         { id: 6, threshold: 100, name: 'Learning Legend', unlocked: userEntries.length >= 100, icon: '🏆', description: 'Reached 100 learning milestones' }
       ]
       setBadges(badgeThresholds)
+      
+      // Load course data
+      const [stats, courseBadges, enrollments] = await Promise.all([
+        courseService.getUserStats(user.id),
+        courseService.getUserBadges(user.id),
+        courseService.getUserEnrollments(user.id)
+      ])
+      
+      setCourseStats(stats)
+      setUserBadges(courseBadges)
+      setEnrolledCourses(enrollments)
       
       console.log('✅ Profile loaded:', userEntries.length, 'entries,', badgeThresholds.filter(b => b.unlocked).length, 'badges')
     } catch (error) {
@@ -578,6 +601,12 @@ const Profile = () => {
                   value: `${stats.learningVelocity}/week`,
                   icon: TrendingUp,
                   color: 'purple'
+                },
+                {
+                  label: 'Course Badges',
+                  value: userBadges.length,
+                  icon: Award,
+                  color: 'orange'
                 }
               ].map((stat, index) => {
                 const Icon = stat.icon
@@ -696,15 +725,193 @@ const Profile = () => {
             </Card>
           </motion.div>
 
+          {/* Course Progress Section */}
+          {courseStats && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <Card>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                  <GraduationCap className="w-5 h-5 mr-2" />
+                  Course Progress
+                </h3>
+                
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                  <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {courseStats.coursesEnrolled}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Enrolled</div>
+                  </div>
+                  
+                  <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {courseStats.coursesCompleted}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Completed</div>
+                  </div>
+                  
+                  <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <Brain className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {courseStats.quizzesPassed}/{courseStats.quizzesTaken}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Quizzes Passed</div>
+                  </div>
+                  
+                  <div className="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                    <BarChart3 className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {courseStats.averageQuizScore}%
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">Avg Quiz Score</div>
+                  </div>
+                </div>
+
+                {/* Overall Progress Bar */}
+                <div className="mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Overall Completion Rate
+                    </span>
+                    <span className="text-sm font-bold text-blue-600">
+                      {courseStats.completionRate}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                    <motion.div
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${courseStats.completionRate}%` }}
+                      transition={{ duration: 1, delay: 0.5 }}
+                    />
+                  </div>
+                </div>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Course Badges */}
+          {userBadges.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <Card>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                  <Trophy className="w-5 h-5 mr-2" />
+                  Achievement Badges ({userBadges.length})
+                </h3>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {userBadges.map((badge, index) => (
+                    <motion.div
+                      key={badge.id}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 * index }}
+                      className={`p-4 text-center rounded-lg border-2 ${
+                        badge.rarity === 'legendary' ? 'bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-300 dark:border-yellow-700' :
+                        badge.rarity === 'rare' ? 'bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-300 dark:border-purple-700' :
+                        badge.rarity === 'uncommon' ? 'bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-blue-300 dark:border-blue-700' :
+                        'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+                      }`}
+                    >
+                      <div className="text-3xl mb-2">{badge.icon}</div>
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-1">
+                        {badge.title}
+                      </h4>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                        {badge.description}
+                      </p>
+                      <div className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                        badge.rarity === 'legendary' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
+                        badge.rarity === 'rare' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300' :
+                        badge.rarity === 'uncommon' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' :
+                        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                      }`}>
+                        {badge.rarity}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Active Courses */}
+          {enrolledCourses.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <Card>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+                  <Zap className="w-5 h-5 mr-2" />
+                  My Courses
+                </h3>
+                
+                <div className="space-y-4">
+                  {enrolledCourses.map((enrollment, index) => (
+                    <motion.div
+                      key={enrollment.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.1 * index }}
+                      className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg"
+                    >
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+                          {enrollment.course?.title || 'Course Title'}
+                        </h4>
+                        <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            enrollment.status === 'completed' 
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300'
+                              : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300'
+                          }`}>
+                            {enrollment.status === 'completed' ? 'Completed' : 'In Progress'}
+                          </span>
+                          <span>Progress: {enrollment.progress || 0}%</span>
+                          {enrollment.completed_at && (
+                            <span>Completed: {format(new Date(enrollment.completed_at), 'MMM dd, yyyy')}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="w-24 ml-4">
+                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div
+                            className={`h-2 rounded-full transition-all duration-500 ${
+                              enrollment.status === 'completed'
+                                ? 'bg-green-500'
+                                : 'bg-blue-500'
+                            }`}
+                            style={{ width: `${enrollment.progress || 0}%` }}
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          )}
+
           {/* Recent Achievements */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.8 }}
           >
             <Card>
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
-                Recent Achievements
+                Recent Learning Achievements
               </h3>
               
               <div className="space-y-4">
