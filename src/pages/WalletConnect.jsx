@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
-import { Wallet, Shield, CheckCircle, ArrowRight, ExternalLink } from 'lucide-react'
+import { Wallet, Shield, CheckCircle, ArrowRight, ExternalLink, User } from 'lucide-react'
 import Button from '@/components/atoms/Button'
 import Card from '@/components/atoms/Card'
 import { useAuth } from '@/contexts/AuthContext'
@@ -13,6 +13,8 @@ const WalletConnect = () => {
   const { user, updateUser } = useAuth()
   const { connectWallet, isLoading } = useApp()
   const [isConnecting, setIsConnecting] = useState(false)
+  const [showManualInput, setShowManualInput] = useState(false)
+  const [manualAccountId, setManualAccountId] = useState('')
 
   const handleConnectWallet = async () => {
     setIsConnecting(true)
@@ -26,13 +28,35 @@ const WalletConnect = () => {
       toast.success('Wallet connected successfully!')
       navigate('/dashboard')
     } catch (error) {
-      toast.error('Failed to connect wallet. Using demo mode.')
-      // Continue without wallet for demo purposes
-      updateUser({ ...user, walletConnected: false })
-      navigate('/dashboard')
+      console.error('Wallet connection failed:', error)
+      toast.error('Wallet connection failed. Try manual input or demo mode.')
+      setShowManualInput(true)
     } finally {
       setIsConnecting(false)
     }
+  }
+
+  const handleManualConnect = () => {
+    if (!manualAccountId.trim()) {
+      toast.error('Please enter a valid Hedera Account ID')
+      return
+    }
+    
+    // Validate account ID format (0.0.xxxxx)
+    const accountIdRegex = /^0\.0\.[0-9]+$/
+    if (!accountIdRegex.test(manualAccountId.trim())) {
+      toast.error('Invalid format. Use format: 0.0.12345')
+      return
+    }
+    
+    updateUser({ 
+      ...user, 
+      walletConnected: true,
+      hederaAccountId: manualAccountId.trim(),
+      connectionType: 'manual'
+    })
+    toast.success('Account connected successfully!')
+    navigate('/dashboard')
   }
 
   const handleSkip = () => {
@@ -77,19 +101,66 @@ const WalletConnect = () => {
           </div>
 
           <div className="space-y-4">
-            <Button
-              onClick={handleConnectWallet}
-              loading={isConnecting}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 text-lg font-semibold"
-            >
-              <Wallet className="w-5 h-5 mr-2" />
-              Connect Hedera Wallet
-            </Button>
+            {!showManualInput ? (
+              <>
+                <Button
+                  onClick={handleConnectWallet}
+                  loading={isConnecting}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 text-lg font-semibold"
+                >
+                  <Wallet className="w-5 h-5 mr-2" />
+                  Connect Hedera Wallet
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setShowManualInput(true)}
+                  className="w-full"
+                >
+                  <User className="w-5 h-5 mr-2" />
+                  Enter Account ID Manually
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Hedera Account ID
+                  </label>
+                  <input
+                    type="text"
+                    value={manualAccountId}
+                    onChange={(e) => setManualAccountId(e.target.value)}
+                    placeholder="0.0.12345"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Enter your Hedera testnet account ID (format: 0.0.xxxxx)
+                  </p>
+                </div>
+                
+                <Button
+                  onClick={handleManualConnect}
+                  className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 text-lg font-semibold"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Connect Account
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  onClick={() => setShowManualInput(false)}
+                  className="w-full"
+                >
+                  Back to Wallet Connect
+                </Button>
+              </>
+            )}
             
             <Button
               variant="outline"
               onClick={handleSkip}
-              className="w-full"
+              className="w-full text-gray-600 dark:text-gray-400"
             >
               Continue in Demo Mode
             </Button>
@@ -97,7 +168,7 @@ const WalletConnect = () => {
 
           <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
             <p className="text-xs text-yellow-700 dark:text-yellow-300">
-              <strong>Demo Mode:</strong> You can use DevChain without a wallet. Your progress will still be recorded on our shared Hedera account for verification.
+              <strong>Professional Tip:</strong> Manual account input is perfect for hackathon demos and judges who want to test instantly without wallet setup.
             </p>
           </div>
 

@@ -13,55 +13,83 @@ if (!supabaseUrl || !supabaseKey) {
 export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
 export const supabaseService = {
-  // Create user
+  // Create user with improved error handling
   async createUser(userData) {
+    if (!supabase) {
+      console.warn('⚠️ Supabase not configured - using local storage only')
+      return userData
+    }
+
     try {
-      // Debug: Log what we're sending
-      console.log('📤 Sending to Supabase:', {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        hasPassword: !!userData.password,
-        passwordLength: userData.password?.length
-      })
-      
-      // Minimal insert to bypass cache issues - only send essential fields
-      const minimalUser = {
-        id: userData.id,
-        username: userData.username,
-        email: userData.email,
-        password: userData.password || 'temp_password_123' // Fallback if missing
+      // Validate required fields
+      if (!userData.id || !userData.username || !userData.email || !userData.password) {
+        throw new Error('Missing required user fields')
       }
+
+      // Clean and validate data
+      const cleanUser = {
+        id: userData.id.toString(),
+        username: userData.username.trim(),
+        email: userData.email.trim().toLowerCase(),
+        password: userData.password,
+        full_name: userData.fullName || userData.username,
+        total_entries: 0,
+        total_badges: 0,
+        learning_streak: 0
+      }
+      
+      console.log('📤 Creating user in Supabase:', {
+        id: cleanUser.id,
+        username: cleanUser.username,
+        email: cleanUser.email
+      })
       
       const { data, error } = await supabase
         .from('users')
-        .insert([minimalUser])
+        .insert([cleanUser])
         .select()
       
-      if (error) throw error
+      if (error) {
+        console.error('❌ Supabase insert error:', error)
+        // Don't throw - continue with local storage
+        return userData
+      }
       
-      console.log('✅ Supabase user created:', data[0])
-      // Return full user data (Supabase will have defaults)
+      console.log('✅ User created in Supabase successfully')
       return { ...userData, ...data[0] }
     } catch (error) {
-      console.error('Supabase create user error:', error)
-      throw error
+      console.error('⚠️ Supabase create user failed:', error.message)
+      // Return original data to continue with local storage
+      return userData
     }
   },
 
-  // Get user by email
+  // Get user by email with better error handling
   async getUserByEmail(email) {
+    if (!supabase) {
+      console.warn('⚠️ Supabase not configured')
+      return null
+    }
+
     try {
       const { data, error } = await supabase
         .from('users')
         .select('*')
-        .eq('email', email)
+        .eq('email', email.trim().toLowerCase())
         .single()
       
-      if (error && error.code !== 'PGRST116') throw error
+      if (error) {
+        if (error.code === 'PGRST116') {
+          // No rows returned - user doesn't exist
+          return null
+        }
+        console.error('❌ Supabase get user error:', error)
+        return null
+      }
+      
       return data
     } catch (error) {
-      console.error('Supabase get user error:', error)
+      console.error('⚠️ Supabase getUserByEmail failed:', error.message)
       return null
     }
   },
@@ -291,7 +319,13 @@ export const supabaseService = {
   }
 }
 
-// Initialize database tables after service is defined
+// Test Supabase connection and initialize
 if (supabase) {
-  supabaseService.initializeTables().catch(console.error)
+  supabaseService.initializeTables().catch(err => {
+    console.warn('⚠️ Supabase initialization failed:', err.message)
+    console.log('💡 Run the database_schema_complete.sql file in your Supabase SQL Editor')
+  })
+} else {
+  console.warn('⚠️ Supabase not configured - using local storage only')
+  console.log('💡 Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env file')
 }

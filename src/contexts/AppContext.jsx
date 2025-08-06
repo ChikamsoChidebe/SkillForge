@@ -51,11 +51,25 @@ export function AppProvider({ children }) {
   const connectWallet = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      const user = await hederaClient.connectWallet()
-      dispatch({ type: 'SET_USER', payload: user })
-      localStorage.setItem('skillforge_user', JSON.stringify(user))
+      const walletData = await hederaClient.connectWallet()
+      dispatch({ type: 'SET_USER', payload: walletData })
+      return walletData
     } catch (error) {
       console.error('Failed to connect wallet:', error)
+      throw error
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false })
+    }
+  }
+
+  const connectManualAccount = async (accountId) => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true })
+      const accountData = await hederaClient.connectManualAccount(accountId)
+      dispatch({ type: 'SET_USER', payload: accountData })
+      return accountData
+    } catch (error) {
+      console.error('Failed to connect manual account:', error)
       throw error
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false })
@@ -105,6 +119,7 @@ export function AppProvider({ children }) {
     ...state,
     dispatch,
     connectWallet,
+    connectManualAccount,
     disconnectWallet,
     addEntry,
     toggleModal,
