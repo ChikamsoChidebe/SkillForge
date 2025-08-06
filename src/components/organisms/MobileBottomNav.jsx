@@ -16,24 +16,24 @@ const MobileBottomNav = () => {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
 
-  // Hide on auth pages and landing
-  const hiddenRoutes = ['/auth', '/wallet-connect', '/']
-  if (hiddenRoutes.includes(location.pathname)) return null
+  // Hide on auth pages, landing, and lesson pages
+  const hiddenRoutes = ['/auth', '/wallet-connect', '/', '/courses/', '/lesson']
+  if (hiddenRoutes.some(route => location.pathname.startsWith(route))) return null
 
   const authenticatedNavItems = [
-    { icon: Home, label: 'Home', path: '/dashboard' },
-    { icon: Bot, label: 'AI Coach', path: '/ai-coach' },
-    { icon: Trophy, label: 'Badges', path: '/badge-gallery' },
-    { icon: BookOpen, label: 'Courses', path: '/courses' },
-    { icon: User, label: 'Profile', path: '/profile' }
+    { icon: Home, label: 'Dashboard', path: '/dashboard', activeRoutes: ['/dashboard'] },
+    { icon: Bot, label: 'AI Coach', path: '/ai-coach', activeRoutes: ['/ai-coach'] },
+    { icon: Trophy, label: 'Badges', path: '/badge-gallery', activeRoutes: ['/badge-gallery', '/badges'] },
+    { icon: BookOpen, label: 'Courses', path: '/courses', activeRoutes: ['/courses'] },
+    { icon: User, label: 'Profile', path: '/profile', activeRoutes: ['/profile', '/settings'] }
   ]
 
   const unauthenticatedNavItems = [
-    { icon: Home, label: 'Home', path: '/' },
-    { icon: BookOpen, label: 'Courses', path: '/courses' },
-    { icon: Users, label: 'Community', path: '/community' },
-    { icon: Trophy, label: 'Leaderboard', path: '/leaderboard' },
-    { icon: LogIn, label: 'Login', path: '/auth' }
+    { icon: Home, label: 'Home', path: '/', activeRoutes: ['/'] },
+    { icon: BookOpen, label: 'Courses', path: '/courses', activeRoutes: ['/courses'] },
+    { icon: Users, label: 'Community', path: '/community', activeRoutes: ['/community'] },
+    { icon: Trophy, label: 'Leaderboard', path: '/leaderboard', activeRoutes: ['/leaderboard'] },
+    { icon: LogIn, label: 'Login', path: '/auth', activeRoutes: ['/auth'] }
   ]
 
   const navItems = isAuthenticated ? authenticatedNavItems : unauthenticatedNavItems
@@ -43,14 +43,16 @@ const MobileBottomNav = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden">
       {/* Professional gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent dark:from-gray-900/20 pointer-events-none" />
       
       <div className="relative bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50 shadow-lg">
         <div className="flex items-center justify-around px-1 py-1">
           {navItems.map((item, index) => {
-            const isActive = location.pathname === item.path
+            const isActive = item.activeRoutes.some(route => 
+              location.pathname === route || location.pathname.startsWith(route + '/')
+            )
             const Icon = item.icon
             
             return (
