@@ -43,7 +43,7 @@ const MobileBottomNav = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+    <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden">
       {/* Professional gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent dark:from-gray-900/20 pointer-events-none" />
       
