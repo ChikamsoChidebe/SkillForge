@@ -3,6 +3,10 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Site-skillforgehedera.vercel.app-brightgreen?style=for-the-badge&logo=vercel)](https://skillforgehedera.vercel.app)
 
+## 🎥 Demo
+
+[![Watch the demo](https://img.youtube.com/vi/jvYQj1r9we0/0.jpg)](https://youtu.be/jvYQj1r9we0)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-18.0+-blue.svg)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-5.0+-purple.svg)](https://vitejs.dev/)
