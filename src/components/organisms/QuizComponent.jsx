@@ -134,15 +134,16 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/50 flex items-start sm:items-center justify-center z-50 overflow-y-auto"
         onClick={onClose}
       >
-        <motion.div
-          initial={{ y: 50 }}
-          animate={{ y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full p-8"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="w-full min-h-full sm:min-h-0 flex items-start sm:items-center justify-center p-2 sm:p-4">
+          <motion.div
+            initial={{ y: 50 }}
+            animate={{ y: 0 }}
+            className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl max-w-2xl w-full p-4 sm:p-8 my-2 sm:my-auto max-h-[95vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
           <div className="text-center space-y-6">
             <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto">
               <Target className="w-10 h-10 text-white" />
@@ -157,22 +158,22 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="font-semibold text-gray-900 dark:text-gray-100">Questions</div>
-                <div className="text-2xl font-bold text-blue-600">{lesson.questions.length}</div>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 text-sm">
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 rounded-lg">
+                <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm">Questions</div>
+                <div className="text-xl sm:text-2xl font-bold text-blue-600">{lesson.questions.length}</div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="font-semibold text-gray-900 dark:text-gray-100">Time Limit</div>
-                <div className="text-2xl font-bold text-green-600">5 min</div>
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 rounded-lg">
+                <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm">Time Limit</div>
+                <div className="text-xl sm:text-2xl font-bold text-green-600">5 min</div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="font-semibold text-gray-900 dark:text-gray-100">Passing Score</div>
-                <div className="text-2xl font-bold text-purple-600">70%</div>
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 rounded-lg">
+                <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm">Passing Score</div>
+                <div className="text-xl sm:text-2xl font-bold text-purple-600">70%</div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="font-semibold text-gray-900 dark:text-gray-100">Attempts</div>
-                <div className="text-2xl font-bold text-orange-600">Unlimited</div>
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 rounded-lg">
+                <div className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm">Attempts</div>
+                <div className="text-xl sm:text-2xl font-bold text-orange-600">Unlimited</div>
               </div>
             </div>
 
@@ -186,24 +187,25 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
               </ul>
             </div>
 
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
               <Button
                 variant="outline"
                 onClick={onClose}
-                className="flex-1"
+                className="flex-1 py-3"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleStartQuiz}
-                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600"
+                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 py-3"
               >
                 Start Quiz
               </Button>
             </div>
           </div>
         </motion.div>
-      </motion.div>
+          </div>
+        </motion.div>
     )
   }
 
@@ -213,15 +215,16 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+        className="fixed inset-0 bg-black/50 flex items-start sm:items-center justify-center z-50 overflow-y-auto"
         onClick={onClose}
       >
-        <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full p-8"
-          onClick={(e) => e.stopPropagation()}
-        >
+        <div className="w-full min-h-full sm:min-h-0 flex items-start sm:items-center justify-center p-2 sm:p-4">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl max-w-2xl w-full p-4 sm:p-8 my-2 sm:my-auto max-h-[95vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
           <div className="text-center space-y-6">
             <motion.div
               initial={{ scale: 0 }}
@@ -255,17 +258,17 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="grid grid-cols-2 gap-4"
+              className="grid grid-cols-2 gap-3 sm:gap-4"
             >
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Correct Answers</div>
-                <div className="text-2xl font-bold text-green-600">
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 rounded-lg">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Correct Answers</div>
+                <div className="text-xl sm:text-2xl font-bold text-green-600">
                   {correctAnswers}/{lesson.questions.length}
                 </div>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <div className="text-sm text-gray-600 dark:text-gray-400">Time Taken</div>
-                <div className="text-2xl font-bold text-blue-600">
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 rounded-lg">
+                <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Time Taken</div>
+                <div className="text-xl sm:text-2xl font-bold text-blue-600">
                   {formatTime(timeTaken !== null ? timeTaken : 300 - timeLeft)}
                 </div>
               </div>
@@ -289,13 +292,13 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 1 }}
-              className="flex space-x-4"
+              className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4"
             >
               {!passed && (
                 <Button
                   onClick={handleRetakeQuiz}
                   variant="outline"
-                  className="flex-1 flex items-center justify-center space-x-2"
+                  className="flex-1 flex items-center justify-center space-x-2 py-3"
                 >
                   <RotateCcw className="w-4 h-4" />
                   <span>Retake Quiz</span>
@@ -303,7 +306,7 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
               )}
               <Button
                 onClick={onClose}
-                className={`${passed ? 'flex-1' : 'flex-1'} flex items-center justify-center space-x-2`}
+                className={`${passed ? 'flex-1' : 'flex-1'} flex items-center justify-center space-x-2 py-3`}
               >
                 <span>{passed ? 'Continue' : 'Close'}</span>
                 {passed && <ArrowRight className="w-4 h-4" />}
@@ -311,6 +314,7 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
             </motion.div>
           </div>
         </motion.div>
+        </div>
       </motion.div>
     )
   }
@@ -322,27 +326,28 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 flex items-start sm:items-center justify-center z-50 overflow-y-auto"
       onClick={onClose}
     >
-      <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+      <div className="w-full min-h-full sm:min-h-0 flex items-start sm:items-center justify-center p-2 sm:p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl max-w-4xl w-full max-h-[95vh] flex flex-col my-2 sm:my-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+        {/* Header - Fixed */}
+        <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 space-y-2 sm:space-y-0">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 truncate">
                 {lesson.title}
               </h2>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Question {currentQuestion + 1} of {lesson.questions.length}
               </p>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-4 flex-shrink-0">
               <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                 <Clock className="w-4 h-4" />
                 <span className={timeLeft < 60 ? 'text-red-500 font-bold' : ''}>
@@ -363,8 +368,8 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
           </div>
         </div>
 
-        {/* Question */}
-        <div className="p-6">
+        {/* Question - Scrollable */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentQuestion}
@@ -373,7 +378,7 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
               exit={{ x: -20, opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 sm:mb-6">
                 {question.question}
               </h3>
 
@@ -381,7 +386,7 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
                 {question.options.map((option, index) => (
                   <motion.label
                     key={index}
-                    className={`flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    className={`flex items-start p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                       answers[currentQuestion] === index
                         ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                         : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -397,7 +402,7 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
                       onChange={() => handleAnswerSelect(currentQuestion, index)}
                       className="sr-only"
                     />
-                    <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
+                    <div className={`w-5 h-5 rounded-full border-2 mr-3 mt-0.5 flex items-center justify-center flex-shrink-0 ${
                       answers[currentQuestion] === index
                         ? 'border-blue-500 bg-blue-500'
                         : 'border-gray-300 dark:border-gray-600'
@@ -410,7 +415,7 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
                         />
                       )}
                     </div>
-                    <span className="text-gray-700 dark:text-gray-300 flex-1">
+                    <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300 flex-1">
                       {option}
                     </span>
                   </motion.label>
@@ -420,54 +425,63 @@ const QuizComponent = ({ courseId, moduleId, lesson, onQuizComplete, onClose }) 
           </AnimatePresence>
         </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              onClick={handlePrevQuestion}
-              disabled={currentQuestion === 0}
-            >
-              Previous
-            </Button>
-
-            <div className="flex space-x-2">
-              {lesson.questions.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentQuestion(index)}
-                  className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                    index === currentQuestion
-                      ? 'bg-blue-500 text-white'
-                      : answers[index] !== undefined
-                      ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300'
-                      : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
+        {/* Footer - Fixed */}
+        <div className="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <div className="flex flex-col space-y-4">
+            {/* Question Navigation - Mobile Responsive */}
+            <div className="flex justify-center">
+              <div className="flex flex-wrap gap-1 sm:gap-2 max-w-full overflow-x-auto">
+                {lesson.questions.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentQuestion(index)}
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-medium transition-colors flex-shrink-0 ${
+                      index === currentQuestion
+                        ? 'bg-blue-500 text-white'
+                        : answers[index] !== undefined
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300'
+                        : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
             </div>
+            
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between">
+              <Button
+                variant="outline"
+                onClick={handlePrevQuestion}
+                disabled={currentQuestion === 0}
+                className="px-4 py-2"
+              >
+                Previous
+              </Button>
 
-            {currentQuestion === lesson.questions.length - 1 ? (
-              <Button
-                onClick={handleSubmitQuiz}
-                disabled={Object.keys(answers).length < lesson.questions.length || submitting}
-                className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600"
-              >
-                {submitting ? 'Submitting...' : 'Submit Quiz'}
-              </Button>
-            ) : (
-              <Button
-                onClick={handleNextQuestion}
-                disabled={answers[currentQuestion] === undefined}
-              >
-                Next
-              </Button>
-            )}
+              {currentQuestion === lesson.questions.length - 1 ? (
+                <Button
+                  onClick={handleSubmitQuiz}
+                  disabled={Object.keys(answers).length < lesson.questions.length || submitting}
+                  className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 px-4 py-2"
+                >
+                  {submitting ? 'Submitting...' : 'Submit Quiz'}
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleNextQuestion}
+                  disabled={answers[currentQuestion] === undefined}
+                  className="px-4 py-2"
+                >
+                  Next
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-      </motion.div>
+        </motion.div>
+      </div>
     </motion.div>
   )
 }

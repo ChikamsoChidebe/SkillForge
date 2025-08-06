@@ -226,26 +226,26 @@ const Courses = () => {
       animate={{ opacity: 1, x: 0 }}
       className="group"
     >
-      <Card className="p-6 hover:shadow-lg transition-all duration-300">
-        <div className="flex items-start space-x-6">
+      <Card className="p-4 sm:p-6 hover:shadow-lg transition-all duration-300">
+        <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
           {/* Thumbnail */}
           <Link to={`/courses/${course.id}`}>
-            <div className="relative flex-shrink-0 cursor-pointer">
+            <div className="relative flex-shrink-0 cursor-pointer w-full sm:w-32">
               <img
                 src={course.thumbnail}
                 alt={course.title}
-                className="w-32 h-20 object-cover rounded-lg"
+                className="w-full sm:w-32 h-32 sm:h-20 object-cover rounded-lg"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-lg" />
             </div>
           </Link>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-2">
-              <div>
+          <div className="flex-1 min-w-0 w-full">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3">
+              <div className="mb-2 sm:mb-0">
                 <Link to={`/courses/${course.id}`}>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 transition-colors cursor-pointer">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 transition-colors cursor-pointer line-clamp-2">
                     {course.title}
                   </h3>
                 </Link>
@@ -253,7 +253,7 @@ const Courses = () => {
                   by {course.instructor}
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 flex-shrink-0">
                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
                   course.level === 'Beginner' ? 'bg-green-500 text-white' :
                   course.level === 'Intermediate' ? 'bg-yellow-500 text-white' :
@@ -267,19 +267,21 @@ const Courses = () => {
               </div>
             </div>
 
-            <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
+            <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
               {course.description}
             </p>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+              {/* Stats - Mobile Responsive */}
+              <div className="grid grid-cols-2 sm:flex sm:items-center gap-3 sm:gap-6 text-sm text-gray-500 dark:text-gray-400">
                 <div className="flex items-center space-x-1">
                   <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                   <span>{course.rating}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Users className="w-4 h-4" />
-                  <span>{course.studentsCount} students</span>
+                  <span className="hidden sm:inline">{course.studentsCount} students</span>
+                  <span className="sm:hidden">{course.studentsCount}</span>
                 </div>
                 <div className="flex items-center space-x-1">
                   <Clock className="w-4 h-4" />
@@ -287,17 +289,19 @@ const Courses = () => {
                 </div>
                 <div className="flex items-center space-x-1">
                   <BookOpen className="w-4 h-4" />
-                  <span>{course.modules.length} modules</span>
+                  <span className="hidden sm:inline">{course.modules.length} modules</span>
+                  <span className="sm:hidden">{course.modules.length}m</span>
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4">
-                <div className="text-xl font-bold text-green-600">
+              {/* Action Section */}
+              <div className="flex items-center justify-between sm:justify-end space-x-3 sm:space-x-4">
+                <div className="text-lg sm:text-xl font-bold text-green-600">
                   FREE
                 </div>
                 {isEnrolled ? (
                   <Link to={`/courses/${course.id}/module/${course.modules[0]?.id}/lesson/${course.modules[0]?.lessons[0]?.id}`}>
-                    <Button className="flex items-center space-x-2">
+                    <Button className="flex items-center space-x-2 text-sm">
                       <Play className="w-4 h-4" />
                       <span>Continue</span>
                     </Button>
@@ -306,10 +310,11 @@ const Courses = () => {
                   <Button
                     onClick={() => handleEnroll(course.id)}
                     variant="outline"
-                    className="flex items-center space-x-2"
+                    className="flex items-center space-x-2 text-sm"
                   >
                     <BookOpen className="w-4 h-4" />
-                    <span>Enroll Now</span>
+                    <span className="hidden sm:inline">Enroll Now</span>
+                    <span className="sm:hidden">Enroll</span>
                   </Button>
                 )}
               </div>
@@ -321,7 +326,7 @@ const Courses = () => {
   )
 
   return (
-    <div className="space-y-8">
+    <div className="container mx-auto px-4 py-6 space-y-6 sm:space-y-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -342,34 +347,33 @@ const Courses = () => {
         </p>
       </motion.div>
 
-      {/* Filters and Search */}
+      {/* Filters and Search - Mobile Optimized */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card className="p-6">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                <input
-                  type="text"
-                  placeholder="Search courses..."
-                  value={filters.search}
-                  onChange={(e) => handleFilterChange('search', e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+        <Card className="p-4 sm:p-6">
+          {/* Mobile-First Layout */}
+          <div className="space-y-4">
+            {/* Search Bar - Full Width on Mobile */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search courses..."
+                value={filters.search}
+                onChange={(e) => handleFilterChange('search', e.target.value)}
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
-            {/* Filters */}
-            <div className="flex flex-wrap gap-4">
+            {/* Filters Row - Responsive Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               <select
                 value={filters.category}
                 onChange={(e) => handleFilterChange('category', e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 <option value="">All Categories</option>
                 {courseService.getCourseCategories().map(category => (
@@ -380,7 +384,7 @@ const Courses = () => {
               <select
                 value={filters.level}
                 onChange={(e) => handleFilterChange('level', e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 <option value="">All Levels</option>
                 {courseService.getCourseLevels().map(level => (
@@ -391,7 +395,7 @@ const Courses = () => {
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
               >
                 <option value="rating">Highest Rated</option>
                 <option value="students">Most Popular</option>
@@ -402,81 +406,88 @@ const Courses = () => {
               <Button
                 onClick={clearFilters}
                 variant="outline"
-                className="flex items-center space-x-2"
+                className="flex items-center justify-center space-x-2 py-2.5"
               >
                 <Filter className="w-4 h-4" />
-                <span>Clear</span>
+                <span className="hidden sm:inline">Clear</span>
               </Button>
             </div>
 
-            {/* View Mode Toggle */}
-            <div className="flex items-center space-x-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode === 'grid' 
-                    ? 'bg-white dark:bg-gray-600 text-blue-600 shadow-sm' 
-                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-                }`}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded-md transition-colors ${
-                  viewMode === 'list' 
-                    ? 'bg-white dark:bg-gray-600 text-blue-600 shadow-sm' 
-                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-                }`}
-              >
-                <List className="w-4 h-4" />
-              </button>
+            {/* View Mode Toggle - Mobile Optimized */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                {courses.length} course{courses.length !== 1 ? 's' : ''} found
+              </span>
+              <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === 'grid' 
+                      ? 'bg-white dark:bg-gray-600 text-blue-600 shadow-sm' 
+                      : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
+                  title="Grid View"
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded-md transition-colors ${
+                    viewMode === 'list' 
+                      ? 'bg-white dark:bg-gray-600 text-blue-600 shadow-sm' 
+                      : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
+                  title="List View"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </Card>
       </motion.div>
 
-      {/* Course Stats */}
+      {/* Course Stats - Mobile Responsive */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-4 gap-6"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6"
       >
-        <Card className="p-6 text-center">
-          <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-            <BookOpen className="w-6 h-6 text-blue-600" />
+        <Card className="p-4 sm:p-6 text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3">
+            <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">{courses.length}</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total Courses</div>
+          <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{courses.length}</div>
+          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Courses</div>
         </Card>
 
-        <Card className="p-6 text-center">
-          <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-            <TrendingUp className="w-6 h-6 text-green-600" />
+        <Card className="p-4 sm:p-6 text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3">
+            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {courses.reduce((sum, course) => sum + course.studentsCount, 0)}
+          <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {courses.reduce((sum, course) => sum + course.studentsCount, 0).toLocaleString()}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Total Students</div>
+          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Total Students</div>
         </Card>
 
-        <Card className="p-6 text-center">
-          <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-            <Star className="w-6 h-6 text-yellow-600" />
+        <Card className="p-4 sm:p-6 text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3">
+            <Star className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-600" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
             {courses.length > 0 ? (courses.reduce((sum, course) => sum + course.rating, 0) / courses.length).toFixed(1) : '0.0'}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Average Rating</div>
+          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Average Rating</div>
         </Card>
 
-        <Card className="p-6 text-center">
-          <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-            <Award className="w-6 h-6 text-purple-600" />
+        <Card className="p-4 sm:p-6 text-center">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center mx-auto mb-2 sm:mb-3">
+            <Award className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
           </div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">100%</div>
-          <div className="text-sm text-gray-600 dark:text-gray-400">Free Courses</div>
+          <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">100%</div>
+          <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Free Courses</div>
         </Card>
       </motion.div>
 
@@ -487,11 +498,15 @@ const Courses = () => {
         transition={{ delay: 0.3 }}
       >
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={
+            viewMode === 'grid' 
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
+              : 'space-y-3 sm:space-y-4'
+          }>
             {[...Array(6)].map((_, index) => (
-              <Card key={index} className="p-6 animate-pulse">
-                <div className="bg-gray-200 dark:bg-gray-700 h-48 rounded-lg mb-4"></div>
-                <div className="space-y-3">
+              <Card key={index} className="p-4 sm:p-6 animate-pulse">
+                <div className="bg-gray-200 dark:bg-gray-700 h-32 sm:h-48 rounded-lg mb-4"></div>
+                <div className="space-y-2 sm:space-y-3">
                   <div className="bg-gray-200 dark:bg-gray-700 h-4 rounded w-3/4"></div>
                   <div className="bg-gray-200 dark:bg-gray-700 h-3 rounded w-full"></div>
                   <div className="bg-gray-200 dark:bg-gray-700 h-3 rounded w-2/3"></div>
@@ -513,8 +528,8 @@ const Courses = () => {
         ) : (
           <div className={
             viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
-              : 'space-y-4'
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
+              : 'space-y-3 sm:space-y-4'
           }>
             {courses.map((course) => {
               const isEnrolled = enrolledCourses.has(course.id)
