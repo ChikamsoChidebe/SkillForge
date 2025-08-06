@@ -36,6 +36,7 @@ import Leaderboard from '@/pages/Leaderboard'
 import NotFound from '@/pages/NotFound'
 import ChatWidget from '@/components/organisms/ChatWidget'
 import BadgeNotificationManager from '@/components/organisms/BadgeNotificationManager'
+import MobileBottomNav from '@/components/organisms/MobileBottomNav'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,7 +61,7 @@ function AppContent() {
         <div className={`flex-1 flex flex-col ${useSidebar ? 'ml-0' : ''}`}>
           {!useSidebar && location.pathname !== '/auth' && location.pathname !== '/wallet-connect' && <Navbar />}
           
-          <main className={`flex-1 ${useSidebar ? 'p-6' : ''}`}>
+          <main className={`flex-1 ${useSidebar ? 'p-6' : ''} pb-20 md:pb-0`}>
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/auth" element={<Auth />} />
@@ -73,6 +74,7 @@ function AppContent() {
             <Route path="/workshops" element={<Workshops />} />
             <Route path="/community" element={<Community />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/badge-gallery" element={<ProtectedRoute><BadgeGallery /></ProtectedRoute>} />
             <Route path="/badges" element={<ProtectedRoute><BadgeGallery /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/ai-coach" element={<ProtectedRoute><AICoach /></ProtectedRoute>} />
@@ -86,6 +88,7 @@ function AppContent() {
           {!useSidebar && <Footer />}
         </div>
         
+        <MobileBottomNav />
         <ChatWidget />
         <BadgeNotificationManager />
         <OfflineIndicator />
