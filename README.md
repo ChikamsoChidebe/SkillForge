@@ -1,4 +1,7 @@
+
 # 🚀 SkillForge - Immutable Learning Milestone Tracker
+
+[![Live Demo](https://img.shields.io/badge/Live%20Site-skillforgehedera.vercel.app-brightgreen?style=for-the-badge&logo=vercel)](https://skillforgehedera.vercel.app)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-18.0+-blue.svg)](https://reactjs.org/)
