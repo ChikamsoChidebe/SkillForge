@@ -187,7 +187,15 @@ const Footer = () => {
                 <span>© {currentYear} SkillForge.</span>
                 <span>Built with</span>
                 <Heart className="w-4 h-4 text-red-500 fill-current" />
-                <span>for developers</span>
+                <span>by</span>
+                <a 
+                  href="https://github.com/ChikamsoChidebe" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                >
+                  Chikamso Chidebe
+                </a>
               </div>
               <div className="flex items-center space-x-4">
                 {footerLinks.legal.map((link) => (
