@@ -33,10 +33,12 @@ import LessonView from '@/pages/LessonView'
 import Workshops from '@/pages/Workshops'
 import Community from '@/pages/Community'
 import Leaderboard from '@/pages/Leaderboard'
+import About from '@/pages/About'
 import NotFound from '@/pages/NotFound'
 import ChatWidget from '@/components/organisms/ChatWidget'
 import BadgeNotificationManager from '@/components/organisms/BadgeNotificationManager'
 import MobileBottomNav from '@/components/organisms/MobileBottomNav'
+import ScrollToTop from '@/components/organisms/ScrollToTop'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -64,6 +66,7 @@ function AppContent() {
           <main className={`flex-1 ${useSidebar ? 'p-6' : ''} pb-20 md:pb-0`}>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/wallet-connect" element={<WalletConnect />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -128,6 +131,7 @@ function App() {
           <AuthProvider>
             <AppProvider>
               <Router>
+                <ScrollToTop />
                 <AppContent />
               </Router>
             </AppProvider>

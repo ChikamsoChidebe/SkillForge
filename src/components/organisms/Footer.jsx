@@ -189,7 +189,7 @@ const Footer = () => {
                 <Heart className="w-4 h-4 text-red-500 fill-current" />
                 <span>by</span>
                 <a 
-                  href="https://github.com/ChikamsoChidebe" 
+                  href="https://myportfolio-pi-lake.vercel.app" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"

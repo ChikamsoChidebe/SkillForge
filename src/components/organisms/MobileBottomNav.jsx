@@ -7,7 +7,9 @@ import {
   User, 
   LogIn,
   BookOpen,
-  Users
+  UserPlus,
+  Wallet,
+  Info
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -16,9 +18,14 @@ const MobileBottomNav = () => {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuth()
 
-  // Hide on auth pages, landing, and lesson pages
-  const hiddenRoutes = ['/auth', '/wallet-connect', '/', '/courses/', '/lesson']
-  if (hiddenRoutes.some(route => location.pathname.startsWith(route))) return null
+  // Hide on specific pages
+  const hiddenRoutes = isAuthenticated ? ['/auth', '/wallet-connect', '/'] : []
+  const hiddenStartsWith = ['/courses/', '/lesson']
+  
+  if (hiddenRoutes.includes(location.pathname) || 
+      hiddenStartsWith.some(route => location.pathname.startsWith(route) && location.pathname !== '/courses')) {
+    return null
+  }
 
   const authenticatedNavItems = [
     { icon: Home, label: 'Dashboard', path: '/dashboard', activeRoutes: ['/dashboard'] },
@@ -30,10 +37,9 @@ const MobileBottomNav = () => {
 
   const unauthenticatedNavItems = [
     { icon: Home, label: 'Home', path: '/', activeRoutes: ['/'] },
-    { icon: BookOpen, label: 'Courses', path: '/courses', activeRoutes: ['/courses'] },
-    { icon: Users, label: 'Community', path: '/community', activeRoutes: ['/community'] },
-    { icon: Trophy, label: 'Leaderboard', path: '/leaderboard', activeRoutes: ['/leaderboard'] },
-    { icon: LogIn, label: 'Login', path: '/auth', activeRoutes: ['/auth'] }
+    { icon: Info, label: 'About', path: '/about', activeRoutes: ['/about'] },
+    { icon: LogIn, label: 'Sign In', path: '/auth', activeRoutes: ['/auth'] },
+    { icon: Wallet, label: 'Connect', path: '/wallet-connect', activeRoutes: ['/wallet-connect'] }
   ]
 
   const navItems = isAuthenticated ? authenticatedNavItems : unauthenticatedNavItems

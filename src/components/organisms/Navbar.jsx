@@ -15,7 +15,8 @@ import {
   Brain,
   Video,
   MessageCircle,
-  Award
+  Award,
+  Info
 } from 'lucide-react'
 import Button from '@/components/atoms/Button'
 import { useApp } from '@/contexts/AppContext'
@@ -33,8 +34,9 @@ const Navbar = () => {
 
   const publicNavigation = [
     { name: 'Home', href: '/', icon: Home },
-    { name: 'Features', href: '#features', icon: BookOpen },
-    { name: 'How It Works', href: '#how-it-works', icon: Trophy },
+    { name: 'About', href: '/about', icon: Info },
+    { name: 'Courses', href: '/courses', icon: BookOpen },
+    { name: 'Connect Wallet', href: '/wallet-connect', icon: Wallet },
   ]
   
   const privateNavigation = [
