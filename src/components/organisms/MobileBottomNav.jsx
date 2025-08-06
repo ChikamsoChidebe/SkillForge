@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { 
   Home, 
-  PlusCircle, 
+  Bot, 
   Trophy, 
   User, 
   LogIn,
@@ -22,7 +22,7 @@ const MobileBottomNav = () => {
 
   const authenticatedNavItems = [
     { icon: Home, label: 'Home', path: '/dashboard' },
-    { icon: PlusCircle, label: 'Add Entry', path: '/log-entry' },
+    { icon: Bot, label: 'AI Coach', path: '/ai-coach' },
     { icon: Trophy, label: 'Badges', path: '/badge-gallery' },
     { icon: BookOpen, label: 'Courses', path: '/courses' },
     { icon: User, label: 'Profile', path: '/profile' }

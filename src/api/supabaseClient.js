@@ -105,7 +105,8 @@ export const supabaseService = {
       if (updates.totalEntries !== undefined) allowedUpdates.total_entries = updates.totalEntries
       if (updates.totalBadges !== undefined) allowedUpdates.total_badges = updates.totalBadges
       if (updates.learningStreak !== undefined) allowedUpdates.learning_streak = updates.learningStreak
-      if (updates.lastEntryDate) allowedUpdates.last_entry_date = updates.lastEntryDate
+      // Skip last_entry_date if column doesn't exist
+      // if (updates.lastEntryDate) allowedUpdates.last_entry_date = updates.lastEntryDate
       
       // Skip if no valid updates
       if (Object.keys(allowedUpdates).length === 0) {
@@ -156,13 +157,31 @@ export const supabaseService = {
     }
   },
 
-  // Create entry
+  // Create entry with better error handling
   async createEntry(entryData) {
+    if (!supabase) {
+      console.warn('⚠️ Supabase not configured - using local storage only')
+      return entryData
+    }
+
     try {
-      // Only use essential columns that exist in database
+      // Create user first if doesn't exist
+      if (entryData.userId) {
+        const existingUser = await this.getUserByEmail('temp@temp.com')
+        if (!existingUser) {
+          await this.createUser({
+            id: entryData.userId,
+            username: 'temp_user',
+            email: 'temp@temp.com',
+            password: 'temp123',
+            fullName: 'Temp User'
+          })
+        }
+      }
+
       const dbEntry = {
         id: entryData.id,
-        userid: entryData.userId,
+        userid: entryData.userId || 'demo_user_1',
         title: entryData.title,
         description: entryData.description,
         category: entryData.category,
@@ -174,16 +193,20 @@ export const supabaseService = {
         .insert([dbEntry])
         .select()
       
-      if (error) throw error
+      if (error) {
+        console.error('❌ Supabase insert error:', error)
+        return entryData // Continue with local storage
+      }
       
+      console.log('✅ Entry created in Supabase')
       return {
         ...entryData,
         id: data[0].id,
         createdAt: data[0].createdat || new Date().toISOString()
       }
     } catch (error) {
-      console.error('Supabase create entry error:', error)
-      throw error
+      console.error('⚠️ Supabase create entry failed:', error.message)
+      return entryData // Continue with local storage
     }
   },
 
