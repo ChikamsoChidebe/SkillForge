@@ -207,7 +207,7 @@ const CourseProgress = ({ courseId, onProgressUpdate }) => {
                     Congratulations! 🎉
                   </h4>
                   <p className="text-sm text-green-700 dark:text-green-300">
-                    You've completed the entire course! Nice Job!
+                    You've completed the entire course!
                   </p>
                 </div>
               </div>
