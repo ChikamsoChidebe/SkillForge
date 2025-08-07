@@ -45,6 +45,7 @@ const Navbar = () => {
     { name: 'Badges', href: '/badges', icon: Award },
     { name: 'Courses', href: '/courses', icon: BookOpen },
     { name: 'AI Coach', href: '/ai-coach', icon: Brain },
+    { name: 'About', href: '/about', icon: Info },
     { name: 'Profile', href: '/profile', icon: User },
   ]
   
@@ -158,7 +159,7 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="hidden sm:flex items-center space-x-2">
-                <Link to="/auth">
+                <Link to="/auth?mode=login">
                   <Button 
                     variant="ghost" 
                     size="sm"
@@ -166,7 +167,7 @@ const Navbar = () => {
                     Sign In
                   </Button>
                 </Link>
-                <Link to="/auth">
+                <Link to="/auth?mode=register">
                   <Button 
                     variant="primary" 
                     size="sm"
@@ -345,12 +346,12 @@ const Navbar = () => {
                     transition={{ delay: 0.4 }}
                     className="flex space-x-3"
                   >
-                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
+                    <Link to="/auth?mode=login" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
                       <Button variant="ghost" className="w-full justify-center py-3">
                         Sign In
                       </Button>
                     </Link>
-                    <Link to="/auth" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
+                    <Link to="/auth?mode=register" onClick={() => setIsMobileMenuOpen(false)} className="flex-1">
                       <Button className="w-full justify-center py-3 bg-gradient-to-r from-blue-500 to-purple-500">
                         Get Started
                       </Button>

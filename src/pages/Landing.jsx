@@ -16,13 +16,10 @@ import {
 import Icon from '@/components/atoms/Icon'
 import Button from '@/components/atoms/Button'
 import Card from '@/components/atoms/Card'
-import AuthModal from '@/components/organisms/AuthModal'
 import { useAuth } from '@/contexts/AuthContext'
 
 const Landing = () => {
   const { isAuthenticated, user } = useAuth()
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authMode, setAuthMode] = useState('register')
   const [activeStep, setActiveStep] = useState(0)
 
   const features = [
@@ -98,35 +95,40 @@ const Landing = () => {
                   </Button>
                 </Link>
               ) : (
-                <Button 
-                  size="lg" 
-                  className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-200"
-                  onClick={() => {
-                    setAuthMode('register')
-                    setShowAuthModal(true)
-                  }}
-                >
-                  <UserPlusIcon className="w-5 h-5 mr-2" />
-                  Get Started Free+
-                </Button>
+                <Link to="/auth?mode=register">
+                  <Button 
+                    size="lg" 
+                    className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    <UserPlusIcon className="w-5 h-5 mr-2" />
+                    Get Started Free+
+                  </Button>
+                </Link>
               )}
               
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 hover:border-white/50 shadow-lg"
-                onClick={() => {
-                  if (isAuthenticated) {
-                    window.location.href = '/badges'
-                  } else {
-                    setAuthMode('login')
-                    setShowAuthModal(true)
-                  }
-                }}
-              >
-                <Trophy className="w-5 h-5 mr-2" />
-                {isAuthenticated ? 'View Badges' : 'Sign In'}
-              </Button>
+              {isAuthenticated ? (
+                <Link to="/badges">
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 hover:border-white/50 shadow-lg"
+                  >
+                    <Trophy className="w-5 h-5 mr-2" />
+                    View Badges
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/auth?mode=login">
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 hover:border-white/50 shadow-lg"
+                  >
+                    <Trophy className="w-5 h-5 mr-2" />
+                    Sign In
+                  </Button>
+                </Link>
+              )}
             </div>
 
             {/* Stats */}
@@ -322,16 +324,12 @@ const Landing = () => {
                   </Button>
                 </Link>
               ) : (
-                <Button 
-                  className="whitespace-nowrap"
-                  onClick={() => {
-                    setAuthMode('register')
-                    setShowAuthModal(true)
-                  }}
-                >
-                  Start Learning
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
+                <Link to="/auth?mode=register">
+                  <Button className="whitespace-nowrap">
+                    Start Learning
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
               )}
             </div>
           </motion.div>
@@ -426,27 +424,20 @@ const Landing = () => {
                           className="mt-4"
                         >
                           {index === 0 && (
-                            <Button
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                if (!isAuthenticated) {
-                                  setAuthMode('register')
-                                  setShowAuthModal(true)
-                                }
-                              }}
-                            >
-                              {isAuthenticated ? '✅ Account Created' : step.action}
-                            </Button>
+                            isAuthenticated ? (
+                              <Button size="sm" disabled>
+                                ✅ Account Created
+                              </Button>
+                            ) : (
+                              <Link to="/auth?mode=register">
+                                <Button size="sm">
+                                  {step.action}
+                                </Button>
+                              </Link>
+                            )
                           )}
                           {index === 1 && (
-                            <Link to={isAuthenticated ? '/log-entry' : '#'} onClick={(e) => {
-                              if (!isAuthenticated) {
-                                e.preventDefault()
-                                setAuthMode('register')
-                                setShowAuthModal(true)
-                              }
-                            }}>
+                            <Link to={isAuthenticated ? '/log-entry' : '/auth?mode=register'}>
                               <Button size="sm">
                                 <BookOpen className="w-4 h-4 mr-2" />
                                 {step.action}
@@ -454,13 +445,7 @@ const Landing = () => {
                             </Link>
                           )}
                           {index === 2 && (
-                            <Link to={isAuthenticated ? '/badges' : '#'} onClick={(e) => {
-                              if (!isAuthenticated) {
-                                e.preventDefault()
-                                setAuthMode('register')
-                                setShowAuthModal(true)
-                              }
-                            }}>
+                            <Link to={isAuthenticated ? '/badges' : '/auth?mode=register'}>
                               <Button size="sm">
                                 <Trophy className="w-4 h-4 mr-2" />
                                 {step.action}
@@ -529,29 +514,25 @@ const Landing = () => {
                 </>
               ) : (
                 <>
-                  <Button
-                    size="lg"
-                    variant="secondary"
-                    className="text-lg px-8 py-4"
-                    onClick={() => {
-                      setAuthMode('register')
-                      setShowAuthModal(true)
-                    }}
-                  >
-                    <UserPlusIcon className="w-5 h-5 mr-2" />
-                    Get Started Free
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
-                    onClick={() => {
-                      setAuthMode('login')
-                      setShowAuthModal(true)
-                    }}
-                  >
-                    Sign In
-                  </Button>
+                  <Link to="/auth?mode=register">
+                    <Button
+                      size="lg"
+                      variant="secondary"
+                      className="text-lg px-8 py-4"
+                    >
+                      <UserPlusIcon className="w-5 h-5 mr-2" />
+                      Get Started Free
+                    </Button>
+                  </Link>
+                  <Link to="/auth?mode=login">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
                 </>
               )}
             </div>
@@ -571,11 +552,7 @@ const Landing = () => {
         </div>
       </section>
 
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(false)}
-        initialMode={authMode}
-      />
+
     </div>
   )
 }

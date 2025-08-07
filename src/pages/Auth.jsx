@@ -38,6 +38,7 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [walletConnected, setWalletConnected] = useState(false)
   
   const [formData, setFormData] = useState({
     name: '',
@@ -51,6 +52,17 @@ const Auth = () => {
     if (isAuthenticated) {
       navigate('/dashboard')
     }
+    
+    // Check if wallet is already connected
+    const walletData = localStorage.getItem('skillforge_wallet_data')
+    if (walletData) {
+      try {
+        const parsed = JSON.parse(walletData)
+        setWalletConnected(!!parsed.hederaAccountId)
+      } catch (e) {
+        localStorage.removeItem('skillforge_wallet_data')
+      }
+    }
   }, [isAuthenticated, navigate])
 
   const handleSubmit = async (e) => {
@@ -63,18 +75,18 @@ const Auth = () => {
           throw new Error('Passwords do not match')
         }
         
-        const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
-        const existingUser = users.find(u => u.email === formData.email || u.username === formData.username)
-        if (existingUser) {
-          throw new Error('User already exists')
+        const result = await register(formData)
+        
+        if (result.success) {
+          // Professional flow: Check if wallet connection is needed
+          if (result.needsWalletConnection) {
+            toast.success('Account created! Please connect your wallet to continue.')
+            navigate('/wallet-connect')
+          } else {
+            toast.success('Account created successfully! Wallet already connected.')
+            navigate('/dashboard')
+          }
         }
-        
-        const newUser = await register(formData)
-        users.push(newUser)
-        localStorage.setItem('skillforge_users', JSON.stringify(users))
-        
-        toast.success('Account created successfully!')
-        navigate('/wallet-connect')
       } else {
         const result = await login({
           identifier: formData.email,
@@ -566,6 +578,28 @@ const Auth = () => {
                 </motion.button>
               </form>
 
+              {/* Wallet Status Notice */}
+              {walletConnected && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.7 }}
+                  className="mt-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-200/50 dark:border-green-700/50"
+                >
+                  <div className="flex items-start space-x-3">
+                    <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm text-green-800 dark:text-green-200 font-medium">
+                        Wallet Connected!
+                      </p>
+                      <p className="text-xs text-green-600 dark:text-green-300 mt-1">
+                        Your Hedera wallet is ready. {mode === 'register' ? 'Create your account to continue.' : 'Sign in to access your dashboard.'}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              
               {/* Blockchain Notice */}
               <motion.div 
                 initial={{ opacity: 0 }}

@@ -38,7 +38,7 @@ const MobileBottomNav = () => {
   const unauthenticatedNavItems = [
     { icon: Home, label: 'Home', path: '/', activeRoutes: ['/'] },
     { icon: Info, label: 'About', path: '/about', activeRoutes: ['/about'] },
-    { icon: LogIn, label: 'Sign In', path: '/auth', activeRoutes: ['/auth'] },
+    { icon: LogIn, label: 'Sign In', path: '/auth?mode=login', activeRoutes: ['/auth'] },
     { icon: Wallet, label: 'Connect', path: '/wallet-connect', activeRoutes: ['/wallet-connect'] }
   ]
 

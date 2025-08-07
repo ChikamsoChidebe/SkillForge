@@ -20,13 +20,28 @@ const WalletConnect = () => {
     setIsConnecting(true)
     try {
       const walletData = await connectWallet()
-      updateUser({ 
-        ...user, 
-        walletConnected: true,
-        hederaAccountId: walletData.accountId 
-      })
-      toast.success('Wallet connected successfully!')
-      navigate('/dashboard')
+      
+      if (user) {
+        // User is already logged in, update their profile
+        updateUser({ 
+          ...user, 
+          walletConnected: true,
+          hederaAccountId: walletData.accountId,
+          connectionType: 'wallet'
+        })
+        toast.success('Wallet connected successfully!')
+        navigate('/dashboard')
+      } else {
+        // User not logged in, store wallet data temporarily
+        const tempWalletData = {
+          hederaAccountId: walletData.accountId,
+          connectionType: 'wallet',
+          connectedAt: new Date().toISOString()
+        }
+        localStorage.setItem('skillforge_wallet_data', JSON.stringify(tempWalletData))
+        toast.success('Wallet connected! Please create an account or sign in to continue.')
+        navigate('/auth?mode=register')
+      }
     } catch (error) {
       console.error('Wallet connection failed:', error)
       toast.error('Wallet connection failed. Try manual input or demo mode.')
@@ -49,20 +64,38 @@ const WalletConnect = () => {
       return
     }
     
-    updateUser({ 
-      ...user, 
-      walletConnected: true,
-      hederaAccountId: manualAccountId.trim(),
-      connectionType: 'manual'
-    })
-    toast.success('Account connected successfully!')
-    navigate('/dashboard')
+    if (user) {
+      // User is already logged in, update their profile
+      updateUser({ 
+        ...user, 
+        walletConnected: true,
+        hederaAccountId: manualAccountId.trim(),
+        connectionType: 'manual'
+      })
+      toast.success('Account connected successfully!')
+      navigate('/dashboard')
+    } else {
+      // User not logged in, store wallet data temporarily
+      const tempWalletData = {
+        hederaAccountId: manualAccountId.trim(),
+        connectionType: 'manual',
+        connectedAt: new Date().toISOString()
+      }
+      localStorage.setItem('skillforge_wallet_data', JSON.stringify(tempWalletData))
+      toast.success('Account connected! Please create an account or sign in to continue.')
+      navigate('/auth?mode=register')
+    }
   }
 
   const handleSkip = () => {
-    updateUser({ ...user, walletConnected: false })
-    toast.success('Continuing in demo mode')
-    navigate('/dashboard')
+    if (user) {
+      updateUser({ ...user, walletConnected: false })
+      toast.success('Continuing in demo mode')
+      navigate('/dashboard')
+    } else {
+      toast.success('Continuing in demo mode')
+      navigate('/auth?mode=register')
+    }
   }
 
   return (
@@ -78,11 +111,14 @@ const WalletConnect = () => {
           </div>
           
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-            Connect Your Wallet
+            {user ? 'Connect Your Wallet' : 'Connect Wallet First'}
           </h1>
           
           <p className="text-gray-600 dark:text-gray-300 mb-8">
-            Connect your Hedera wallet to record your learning milestones on the blockchain and earn verifiable NFT badges.
+            {user 
+              ? 'Connect your Hedera wallet to record your learning milestones on the blockchain and earn verifiable NFT badges.'
+              : 'Connect your Hedera wallet first, then create your account for a seamless experience. Your wallet will be automatically linked to your new account.'
+            }
           </p>
 
           <div className="space-y-4 mb-8">
@@ -172,17 +208,19 @@ const WalletConnect = () => {
             </p>
           </div>
 
-          <div className="mt-6 text-center">
-            <Link 
-              to="/dashboard" 
-              className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
-            >
-              Skip for now →
-            </Link>
-          </div>
+          {user && (
+            <div className="mt-6 text-center">
+              <Link 
+                to="/dashboard" 
+                className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+              >
+                Skip for now →
+              </Link>
+            </div>
+          )}
         </Card>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-3">
           <a
             href="https://portal.hedera.com"
             target="_blank"
@@ -192,6 +230,17 @@ const WalletConnect = () => {
             Don't have a Hedera wallet? Get one here
             <ExternalLink className="w-4 h-4 ml-1" />
           </a>
+          
+          {!user && (
+            <div className="text-center">
+              <Link 
+                to="/auth?mode=login" 
+                className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
+              >
+                Already have an account? Sign in →
+              </Link>
+            </div>
+          )}
         </div>
       </motion.div>
     </div>

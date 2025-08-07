@@ -82,6 +82,19 @@ export const AuthProvider = ({ children }) => {
         throw new Error('An account with this email already exists. Please try logging in instead.')
       }
 
+      // Check if wallet is already connected (from localStorage or session)
+      const existingWalletData = localStorage.getItem('skillforge_wallet_data')
+      let walletInfo = null
+      if (existingWalletData) {
+        try {
+          walletInfo = JSON.parse(existingWalletData)
+          console.log('✅ Found existing wallet connection:', walletInfo.hederaAccountId)
+        } catch (e) {
+          console.log('⚠️ Invalid wallet data, clearing...')
+          localStorage.removeItem('skillforge_wallet_data')
+        }
+      }
+
       // Create new user
       const newUser = {
         id: Date.now().toString(),
@@ -95,6 +108,10 @@ export const AuthProvider = ({ children }) => {
         totalBadges: 0,
         learningStreak: 0,
         lastEntryDate: null,
+        // Include wallet info if already connected
+        walletConnected: !!walletInfo,
+        hederaAccountId: walletInfo?.hederaAccountId || null,
+        connectionType: walletInfo?.connectionType || null,
         preferences: {
           theme: 'system',
           notifications: true,
@@ -115,8 +132,17 @@ export const AuthProvider = ({ children }) => {
       setUser(newUser)
       setIsAuthenticated(true)
       
+      // Clear temporary wallet data since it's now part of user profile
+      if (walletInfo) {
+        localStorage.removeItem('skillforge_wallet_data')
+      }
+      
       toast.success('Account created successfully!')
-      return { success: true, user: newUser }
+      return { 
+        success: true, 
+        user: newUser,
+        needsWalletConnection: !walletInfo // Indicate if wallet connection is needed
+      }
     } catch (error) {
       toast.error(error.message)
       return { success: false, error: error.message }

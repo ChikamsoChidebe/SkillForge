@@ -1,14 +1,12 @@
-import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import AuthModal from './AuthModal'
+import { useNavigate } from 'react-router-dom'
 import Button from '@/components/atoms/Button'
 import LoadingSpinner from '@/components/organisms/LoadingSpinner'
 import { ShieldCheckIcon, UserPlusIcon } from '@heroicons/react/24/outline'
 
 const ProtectedRoute = ({ children, fallback }) => {
   const { isAuthenticated, isLoading, user } = useAuth()
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authMode, setAuthMode] = useState('login')
+  const navigate = useNavigate()
   
   // Debug logging
   console.log('🚪 ProtectedRoute check:', { 
@@ -43,32 +41,20 @@ const ProtectedRoute = ({ children, fallback }) => {
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
-            onClick={() => {
-              setAuthMode('login')
-              setShowAuthModal(true)
-            }}
+            onClick={() => navigate('/auth?mode=login')}
             size="lg"
           >
             Sign In
           </Button>
           <Button
             variant="outline"
-            onClick={() => {
-              setAuthMode('register')
-              setShowAuthModal(true)
-            }}
+            onClick={() => navigate('/auth?mode=register')}
             size="lg"
           >
             <UserPlusIcon className="w-5 h-5 mr-2" />
             Create Account
           </Button>
         </div>
-
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          initialMode={authMode}
-        />
       </div>
     )
   }

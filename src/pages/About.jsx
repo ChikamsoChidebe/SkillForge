@@ -11,9 +11,11 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import Button from '@/components/atoms/Button'
+import { useAuth } from '@/contexts/AuthContext'
 
 const About = () => {
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
 
   const features = [
     {
@@ -99,19 +101,54 @@ const About = () => {
               and earn verifiable badges that prove your skills to the world.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                onClick={() => navigate('/auth')}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                Get Started
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => navigate('/wallet-connect')}
-              >
-                Connect Wallet
-              </Button>
+              {isAuthenticated ? (
+                <>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      navigate('/dashboard')
+                    }}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer"
+                  >
+                    Go to Dashboard
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      navigate('/badges')
+                    }}
+                    className="cursor-pointer"
+                  >
+                    <Trophy className="w-4 h-4 mr-2" />
+                    View Badges
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      navigate('/auth?mode=register')
+                    }}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 cursor-pointer"
+                  >
+                    Get Started
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      navigate('/wallet-connect')
+                    }}
+                    className="cursor-pointer"
+                  >
+                    Connect Wallet
+                  </Button>
+                </>
+              )}
             </div>
           </motion.div>
         </div>
@@ -232,20 +269,55 @@ const About = () => {
             <p className="text-blue-100 mb-8 text-lg">
               Join thousands of developers building verifiable skill records on the blockchain
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                onClick={() => navigate('/auth')}
-                className="!bg-white !text-blue-600 hover:!bg-gray-100 !font-semibold border border-blue-200"
-              >
-                Create Account
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => navigate('/wallet-connect')}
-                className="border-white text-white hover:bg-white/10"
-              >
-                Connect Wallet
-              </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+              {isAuthenticated ? (
+                <>
+                  <button
+                    onClick={() => {
+                      navigate('/dashboard')
+                      window.scrollTo(0, 0)
+                    }}
+                    className="relative z-20 px-6 py-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold border border-blue-200 rounded-lg transition-all duration-200 cursor-pointer shadow-lg"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    Go to Dashboard
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/courses')
+                      window.scrollTo(0, 0)
+                    }}
+                    className="relative z-20 px-6 py-3 border border-white text-white hover:bg-white/10 rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center shadow-lg"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Explore Courses
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => {
+                      navigate('/auth?mode=register')
+                      window.scrollTo(0, 0)
+                    }}
+                    className="relative z-20 px-6 py-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold border border-blue-200 rounded-lg transition-all duration-200 cursor-pointer shadow-lg"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    Create Account
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigate('/wallet-connect')
+                      window.scrollTo(0, 0)
+                    }}
+                    className="relative z-20 px-6 py-3 border border-white text-white hover:bg-white/10 rounded-lg transition-all duration-200 cursor-pointer shadow-lg"
+                    style={{ pointerEvents: 'auto' }}
+                  >
+                    Connect Wallet
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         </div>
