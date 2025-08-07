@@ -20,7 +20,7 @@ const MobileBottomNav = () => {
   const { isAuthenticated } = useAuth()
 
   // Hide on specific pages
-  const hiddenRoutes = isAuthenticated ? ['/auth', '/wallet-connect', '/'] : []
+  const hiddenRoutes = ['/auth', '/wallet-connect']
   const hiddenStartsWith = ['/courses/', '/lesson']
   
   if (hiddenRoutes.includes(location.pathname) || 
