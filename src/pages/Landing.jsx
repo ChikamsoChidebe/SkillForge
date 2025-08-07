@@ -11,7 +11,13 @@ import {
   Globe,
   Users,
   PlayIcon,
-  UserPlusIcon
+  UserPlusIcon,
+  Brain,
+  TrendingUp,
+  Calculator,
+  BarChart3,
+  PieChart,
+  Target
 } from 'lucide-react'
 import Icon from '@/components/atoms/Icon'
 import Button from '@/components/atoms/Button'
@@ -204,6 +210,85 @@ const Landing = () => {
               )
             })}
           </div>
+        </div>
+      </section>
+
+      {/* AI Financial Modeling Section */}
+      <section className="py-24 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+        </div>
+        
+        <div className="relative container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <div className="inline-flex items-center px-6 py-3 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-medium mb-6">
+              <Brain className="w-4 h-4 mr-2" />
+              🚀 NEW: AI Financial Modeling Studio
+            </div>
+            <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+              Build Financial Models
+              <br />
+              <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                with AI Power
+              </span>
+            </h2>
+            <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-8">
+              Revolutionary AI-powered financial modeling platform. Generate DCF models, Monte Carlo simulations, 
+              and portfolio optimizations in minutes with blockchain verification.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Link to="/financial-modeling">
+                <Button 
+                  size="lg" 
+                  className="bg-white text-indigo-600 hover:bg-gray-100 text-lg px-8 py-4 font-semibold shadow-xl"
+                >
+                  <TrendingUp className="w-5 h-5 mr-2" />
+                  Try FinanceAI Studio
+                </Button>
+              </Link>
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="text-lg px-8 py-4 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm"
+              >
+                <PlayIcon className="w-5 h-5 mr-2" />
+                Watch Demo
+              </Button>
+            </div>
+            
+            {/* AI Features Grid */}
+            <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+              {[
+                { icon: Calculator, label: 'DCF Models', desc: '94% Accuracy' },
+                { icon: BarChart3, label: 'Monte Carlo', desc: '97% Precision' },
+                { icon: PieChart, label: 'Portfolio Opt', desc: '96% Success' },
+                { icon: Target, label: 'Risk Analysis', desc: '92% Reliability' }
+              ].map((feature, index) => (
+                <motion.div
+                  key={feature.label}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="text-center p-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20"
+                >
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <feature.icon className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-white font-semibold mb-1">{feature.label}</div>
+                  <div className="text-blue-200 text-sm">{feature.desc}</div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 

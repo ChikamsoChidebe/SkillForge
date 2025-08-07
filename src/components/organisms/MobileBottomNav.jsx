@@ -9,7 +9,8 @@ import {
   BookOpen,
   UserPlus,
   Wallet,
-  Info
+  Info,
+  TrendingUp
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -29,7 +30,7 @@ const MobileBottomNav = () => {
 
   const authenticatedNavItems = [
     { icon: Home, label: 'Dashboard', path: '/dashboard', activeRoutes: ['/dashboard'] },
-    { icon: Bot, label: 'AI Coach', path: '/ai-coach', activeRoutes: ['/ai-coach'] },
+    { icon: TrendingUp, label: 'FinanceAI', path: '/financial-modeling', activeRoutes: ['/financial-modeling'] },
     { icon: Trophy, label: 'Badges', path: '/badge-gallery', activeRoutes: ['/badge-gallery', '/badges'] },
     { icon: BookOpen, label: 'Courses', path: '/courses', activeRoutes: ['/courses'] },
     { icon: User, label: 'Profile', path: '/profile', activeRoutes: ['/profile', '/settings'] }
@@ -37,7 +38,7 @@ const MobileBottomNav = () => {
 
   const unauthenticatedNavItems = [
     { icon: Home, label: 'Home', path: '/', activeRoutes: ['/'] },
-    { icon: Info, label: 'About', path: '/about', activeRoutes: ['/about'] },
+    { icon: TrendingUp, label: 'FinanceAI', path: '/financial-modeling', activeRoutes: ['/financial-modeling'] },
     { icon: LogIn, label: 'Sign In', path: '/auth?mode=login', activeRoutes: ['/auth'] },
     { icon: Wallet, label: 'Connect', path: '/wallet-connect', activeRoutes: ['/wallet-connect'] }
   ]

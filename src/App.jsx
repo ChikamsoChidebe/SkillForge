@@ -34,6 +34,7 @@ import Workshops from '@/pages/Workshops'
 import Community from '@/pages/Community'
 import Leaderboard from '@/pages/Leaderboard'
 import About from '@/pages/About'
+import FinancialModeling from '@/pages/FinancialModeling'
 import NotFound from '@/pages/NotFound'
 import ChatWidget from '@/components/organisms/ChatWidget'
 import BadgeNotificationManager from '@/components/organisms/BadgeNotificationManager'
@@ -77,6 +78,7 @@ function AppContent() {
             <Route path="/workshops" element={<Workshops />} />
             <Route path="/community" element={<Community />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/financial-modeling" element={<FinancialModeling />} />
             <Route path="/badge-gallery" element={<ProtectedRoute><BadgeGallery /></ProtectedRoute>} />
             <Route path="/badges" element={<ProtectedRoute><BadgeGallery /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />

@@ -16,7 +16,8 @@ import {
   Video,
   MessageCircle,
   Award,
-  Info
+  Info,
+  TrendingUp
 } from 'lucide-react'
 import Button from '@/components/atoms/Button'
 import { useApp } from '@/contexts/AppContext'
@@ -36,6 +37,7 @@ const Navbar = () => {
     { name: 'Home', href: '/', icon: Home },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Courses', href: '/courses', icon: BookOpen },
+    { name: 'FinanceAI', href: '/financial-modeling', icon: TrendingUp },
     { name: 'Connect Wallet', href: '/wallet-connect', icon: Wallet },
   ]
   
@@ -45,6 +47,7 @@ const Navbar = () => {
     { name: 'Badges', href: '/badges', icon: Award },
     { name: 'Courses', href: '/courses', icon: BookOpen },
     { name: 'AI Coach', href: '/ai-coach', icon: Brain },
+    { name: 'FinanceAI', href: '/financial-modeling', icon: TrendingUp },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Profile', href: '/profile', icon: User },
   ]
