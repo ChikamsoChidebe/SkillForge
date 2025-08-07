@@ -213,7 +213,7 @@ const Landing = () => {
             className="text-center mb-16"
           >
             <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-sm font-medium mb-4">
-              🚀 Latest Updates
+               Latest Updates
             </div>
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-gray-100">
               What's New in SkillForge
