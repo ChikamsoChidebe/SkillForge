@@ -29,6 +29,8 @@ import PartnershipSection from '@/components/organisms/PartnershipSection'
 import HederaServicesShowcase from '@/components/organisms/HederaServicesShowcase'
 import LiveHederaData from '@/components/organisms/LiveHederaData'
 import GoogleAuthShowcase from '@/components/organisms/GoogleAuthShowcase'
+import LiveMetricsDashboard from '@/components/organisms/LiveMetricsDashboard'
+import InteractiveSandbox from '@/components/organisms/InteractiveSandbox'
 
 const Landing = () => {
   const { isAuthenticated, user } = useAuth()
@@ -560,6 +562,12 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* Live Metrics Dashboard */}
+      <LiveMetricsDashboard />
+
+      {/* Interactive Sandbox */}
+      <InteractiveSandbox />
 
       {/* Hedera Services Showcase */}
       <HederaServicesShowcase />
