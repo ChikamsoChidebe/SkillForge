@@ -252,7 +252,7 @@ const HederaServicesShowcase = () => {
               size="lg"
               variant="secondary"
               className="bg-white text-blue-600 hover:bg-gray-100"
-              onClick={() => window.open('https://hashscan.io/testnet', '_blank')}
+              onClick={() => window.open('https://hashscan.io/testnet/account/0.0.6478142', '_blank')}
             >
               <ExternalLink className="w-5 h-5 mr-2" />
               Explore HashScan

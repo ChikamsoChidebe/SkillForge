@@ -538,7 +538,7 @@ const Landing = () => {
                               variant="outline"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                window.open('https://hashscan.io/testnet', '_blank')
+                                window.open('https://hashscan.io/testnet/account/0.0.6478142', '_blank')
                               }}
                             >
                               <Globe className="w-4 h-4 mr-2" />
