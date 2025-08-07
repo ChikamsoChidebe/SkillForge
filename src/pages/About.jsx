@@ -256,12 +256,13 @@ const About = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="py-16 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="py-16 bg-gradient-to-r from-blue-600 to-purple-600 relative">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            className="relative z-20"
           >
             <h2 className="text-3xl font-bold text-white mb-4">
               Ready to Start Your Verified Learning Journey?
@@ -273,12 +274,13 @@ const About = () => {
               {isAuthenticated ? (
                 <>
                   <button
-                    onClick={() => {
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
                       navigate('/dashboard')
                       window.scrollTo(0, 0)
                     }}
-                    className="relative z-20 px-6 py-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold border border-blue-200 rounded-lg transition-all duration-200 cursor-pointer shadow-lg"
-                    style={{ pointerEvents: 'auto' }}
+                    className="relative z-30 px-6 py-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold border border-blue-200 rounded-lg transition-all duration-200 cursor-pointer shadow-lg"
                   >
                     Go to Dashboard
                   </button>
@@ -297,12 +299,13 @@ const About = () => {
               ) : (
                 <>
                   <button
-                    onClick={() => {
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
                       navigate('/auth?mode=register')
                       window.scrollTo(0, 0)
                     }}
-                    className="relative z-20 px-6 py-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold border border-blue-200 rounded-lg transition-all duration-200 cursor-pointer shadow-lg"
-                    style={{ pointerEvents: 'auto' }}
+                    className="relative z-30 px-6 py-3 bg-white text-blue-600 hover:bg-gray-100 font-semibold border border-blue-200 rounded-lg transition-all duration-200 cursor-pointer shadow-lg"
                   >
                     Create Account
                   </button>
