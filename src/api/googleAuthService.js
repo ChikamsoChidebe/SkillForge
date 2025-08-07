@@ -44,7 +44,7 @@ class GoogleAuthService {
    */
   loadGoogleScript() {
     return new Promise((resolve, reject) => {
-      if (window.google?.accounts?.id) {
+      if (window.google?.accounts?.id && window.gapi) {
         resolve()
         return
       }
@@ -55,25 +55,34 @@ class GoogleAuthService {
       script1.async = true
       script1.defer = true
       
-      // Load Google API for OAuth2
+      // Load Google API Platform Library
       const script2 = document.createElement('script')
-      script2.src = 'https://apis.google.com/js/api.js'
+      script2.src = 'https://apis.google.com/js/platform.js'
       script2.async = true
       script2.defer = true
+      
+      // Load Google API Client
+      const script3 = document.createElement('script')
+      script3.src = 'https://apis.google.com/js/api.js'
+      script3.async = true
+      script3.defer = true
       
       let loaded = 0
       const checkLoaded = () => {
         loaded++
-        if (loaded === 2) resolve()
+        if (loaded === 3) resolve()
       }
       
       script1.onload = checkLoaded
       script2.onload = checkLoaded
+      script3.onload = checkLoaded
       script1.onerror = reject
       script2.onerror = reject
+      script3.onerror = reject
       
       document.head.appendChild(script1)
       document.head.appendChild(script2)
+      document.head.appendChild(script3)
     })
   }
 
@@ -165,24 +174,51 @@ class GoogleAuthService {
     }
 
     try {
-      if (window.google?.accounts?.oauth2) {
-        // Use OAuth2 popup for account selection
-        window.google.accounts.oauth2.initTokenClient({
+      if (window.gapi?.load) {
+        // Load Google API and use OAuth2
+        window.gapi.load('auth2', () => {
+          window.gapi.auth2.init({
+            client_id: this.clientId
+          }).then(() => {
+            const authInstance = window.gapi.auth2.getAuthInstance()
+            authInstance.signIn().then((googleUser) => {
+              const profile = googleUser.getBasicProfile()
+              const event = new CustomEvent('googleAuthSuccess', {
+                detail: {
+                  email: profile.getEmail(),
+                  name: profile.getName(),
+                  picture: profile.getImageUrl(),
+                  sub: profile.getId(),
+                  email_verified: true
+                }
+              })
+              window.dispatchEvent(event)
+            })
+          })
+        })
+      } else if (window.google?.accounts?.oauth2) {
+        // Use new Google Identity Services OAuth2
+        const client = window.google.accounts.oauth2.initTokenClient({
           client_id: this.clientId,
-          scope: 'email profile',
+          scope: 'email profile openid',
           callback: (response) => {
             if (response.access_token) {
               this.fetchUserProfile(response.access_token)
             }
           }
-        }).requestAccessToken()
+        })
+        client.requestAccessToken()
       } else {
         // Fallback to prompt
         window.google.accounts.id.prompt()
       }
     } catch (error) {
       console.error('❌ Error triggering Google auth:', error)
-      this.showAccountPicker()
+      // Only show demo picker as last resort
+      const event = new CustomEvent('googleAuthError', {
+        detail: { error: 'Google authentication failed' }
+      })
+      window.dispatchEvent(event)
     }
   }
 
@@ -226,9 +262,6 @@ class GoogleAuthService {
     return new Promise((resolve, reject) => {
       try {
         if (window.google?.accounts?.id) {
-          // Set up one-time callback
-          const originalCallback = this.handleCredentialResponse.bind(this)
-          
           const handleSuccess = (event) => {
             window.removeEventListener('googleAuthSuccess', handleSuccess)
             window.removeEventListener('googleAuthError', handleError)
@@ -247,20 +280,18 @@ class GoogleAuthService {
           // Try Google One Tap first
           window.google.accounts.id.prompt((notification) => {
             if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-              // Fallback to account picker
-              this.showAccountPicker()
+              // Try OAuth2 popup for real account selection
+              this.triggerGoogleAuth()
             }
           })
         } else {
-          // Direct fallback to account picker
-          this.showAccountPicker()
-          
-          const handleSuccess = (event) => {
-            window.removeEventListener('googleAuthSuccess', handleSuccess)
-            resolve(event.detail)
+          // Initialize and try again
+          await this.initialize()
+          if (window.google?.accounts?.id) {
+            window.google.accounts.id.prompt()
+          } else {
+            reject(new Error('Google services not available'))
           }
-          
-          window.addEventListener('googleAuthSuccess', handleSuccess)
         }
       } catch (error) {
         reject(error)
