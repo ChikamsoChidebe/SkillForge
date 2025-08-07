@@ -248,26 +248,15 @@ const HederaServicesShowcase = () => {
           </div>
           
           <div className="text-center">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="bg-white text-blue-600 hover:bg-gray-100"
-                onClick={() => window.open('https://hashscan.io/testnet/account/0.0.6478142', '_blank')}
-              >
-                <ExternalLink className="w-5 h-5 mr-2" />
-                View Live Account
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white/30 text-white hover:bg-white/10"
-                onClick={() => window.open('https://hashscan.io/testnet/contract/0.0.6478142', '_blank')}
-              >
-                <Code className="w-5 h-5 mr-2" />
-                View Smart Contract
-              </Button>
-            </div>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="bg-white text-blue-600 hover:bg-gray-100"
+              onClick={() => window.open('https://hashscan.io/testnet', '_blank')}
+            >
+              <ExternalLink className="w-5 h-5 mr-2" />
+              Explore HashScan
+            </Button>
           </div>
         </motion.div>
       </div>
