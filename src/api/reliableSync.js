@@ -45,5 +45,26 @@ export const reliableSync = {
     const entries = await productionService.getUserEntries(userId)
     console.log(`✅ Loaded ${entries.length} entries`)
     return entries
+  },
+
+  // Update user with local-first approach
+  async updateUser(userId, updates) {
+    // Update locally first
+    const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
+    const userIndex = users.findIndex(u => u.id === userId)
+    if (userIndex !== -1) {
+      users[userIndex] = { ...users[userIndex], ...updates }
+      localStorage.setItem('skillforge_users', JSON.stringify(users))
+    }
+    
+    // Try cloud sync in background
+    try {
+      await supabaseService.updateUser(userId, updates)
+      console.log('✅ User updated in cloud')
+    } catch (error) {
+      console.log('⚠️ Cloud update failed, user updated locally')
+    }
+    
+    return updates
   }
 }
