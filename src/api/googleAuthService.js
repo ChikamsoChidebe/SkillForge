@@ -216,6 +216,59 @@ class GoogleAuthService {
   }
 
   /**
+   * Sign in with Google
+   */
+  async signIn() {
+    if (!this.isInitialized) {
+      await this.initialize()
+    }
+
+    return new Promise((resolve, reject) => {
+      try {
+        if (window.google?.accounts?.id) {
+          // Set up one-time callback
+          const originalCallback = this.handleCredentialResponse.bind(this)
+          
+          const handleSuccess = (event) => {
+            window.removeEventListener('googleAuthSuccess', handleSuccess)
+            window.removeEventListener('googleAuthError', handleError)
+            resolve(event.detail)
+          }
+          
+          const handleError = (event) => {
+            window.removeEventListener('googleAuthSuccess', handleSuccess)
+            window.removeEventListener('googleAuthError', handleError)
+            reject(new Error(event.detail.error))
+          }
+          
+          window.addEventListener('googleAuthSuccess', handleSuccess)
+          window.addEventListener('googleAuthError', handleError)
+          
+          // Try Google One Tap first
+          window.google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+              // Fallback to account picker
+              this.showAccountPicker()
+            }
+          })
+        } else {
+          // Direct fallback to account picker
+          this.showAccountPicker()
+          
+          const handleSuccess = (event) => {
+            window.removeEventListener('googleAuthSuccess', handleSuccess)
+            resolve(event.detail)
+          }
+          
+          window.addEventListener('googleAuthSuccess', handleSuccess)
+        }
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  /**
    * Prompt Google One Tap
    */
   promptOneTap() {
