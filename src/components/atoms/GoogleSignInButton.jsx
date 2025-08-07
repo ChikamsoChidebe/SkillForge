@@ -123,13 +123,14 @@ const GoogleSignInButton = ({
         onClick={handleFallbackClick}
         disabled={disabled || isLoading}
         className={`
-          w-full flex items-center justify-center space-x-3 px-6 py-3 
+          w-full flex items-center justify-center space-x-2 sm:space-x-3 px-4 sm:px-6 py-3 sm:py-4
           bg-white dark:bg-gray-800 border-2 border-gray-300 dark:border-gray-600 
-          rounded-xl font-medium text-gray-700 dark:text-gray-200
+          rounded-xl font-medium text-sm sm:text-base text-gray-700 dark:text-gray-200
           hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500
           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
           disabled:opacity-50 disabled:cursor-not-allowed
           transition-all duration-200 shadow-sm hover:shadow-md
+          min-h-[48px] touch-manipulation
           ${(!isInitialized || isLoading) ? 'opacity-100' : 'opacity-0 absolute inset-0'}
         `}
       >
@@ -140,8 +141,8 @@ const GoogleSignInButton = ({
           </>
         ) : (
           <>
-            <Chrome className="w-5 h-5 text-blue-500" />
-            <span>{buttonText}</span>
+            <Chrome className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 flex-shrink-0" />
+            <span className="truncate">{buttonText}</span>
           </>
         )}
       </motion.button>

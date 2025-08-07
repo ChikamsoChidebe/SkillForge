@@ -303,8 +303,8 @@ const Auth = () => {
       </header>
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
           
           {/* Left Side - Hero Content */}
           <motion.div
@@ -419,7 +419,7 @@ const Auth = () => {
           >
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 rounded-3xl blur-xl" />
             
-            <div className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-gray-700/50 shadow-2xl p-8 lg:p-10">
+            <div className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl rounded-3xl border border-gray-200/50 dark:border-gray-700/50 shadow-2xl p-6 sm:p-8 lg:p-10">
               
               {/* Form Header */}
               <div className="text-center mb-8">
@@ -474,23 +474,25 @@ const Auth = () => {
               </div>
 
               {/* Google Sign-In */}
-              <div className="space-y-4">
-                <GoogleSignInButton
-                  mode={mode}
-                  onSuccess={handleGoogleSuccess}
-                  onError={handleGoogleError}
-                  disabled={isLoading}
-                  size="large"
-                  className="w-full"
-                />
+              <div className="space-y-4 mb-6">
+                <div className="w-full">
+                  <GoogleSignInButton
+                    mode={mode}
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    disabled={isLoading}
+                    size="large"
+                    className="w-full min-h-[48px]"
+                  />
+                </div>
                 
                 {/* Divider */}
-                <div className="relative flex items-center justify-center my-6">
+                <div className="relative flex items-center justify-center my-4 sm:my-6">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-gray-300 dark:border-gray-600" />
                   </div>
-                  <div className="relative bg-white dark:bg-gray-900 px-4">
-                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  <div className="relative bg-white dark:bg-gray-900 px-3 sm:px-4">
+                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium">
                       Or continue with email
                     </span>
                   </div>
@@ -498,16 +500,16 @@ const Auth = () => {
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <AnimatePresence mode="wait">
                   {mode === 'register' && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="space-y-6"
+                      className="space-y-4 sm:space-y-6"
                     >
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                         <div className="relative group">
                           <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
                           <input
@@ -516,7 +518,7 @@ const Auth = () => {
                             value={formData.name}
                             onChange={handleChange}
                             placeholder="Full Name"
-                            className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base"
                             required
                           />
                         </div>
@@ -528,7 +530,7 @@ const Auth = () => {
                             value={formData.username}
                             onChange={handleChange}
                             placeholder="Username"
-                            className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                            className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base"
                             required
                           />
                         </div>
@@ -545,7 +547,7 @@ const Auth = () => {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Email Address"
-                    className="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                    className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 text-sm sm:text-base"
                     required
                   />
                 </div>
