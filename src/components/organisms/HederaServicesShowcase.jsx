@@ -262,7 +262,7 @@ const HederaServicesShowcase = () => {
                 size="lg"
                 variant="outline"
                 className="border-white/30 text-white hover:bg-white/10"
-                onClick={() => window.open('https://hashscan.io/testnet/contract/0.0.6478143', '_blank')}
+                onClick={() => window.open('https://hashscan.io/testnet/contract/0.0.6478142', '_blank')}
               >
                 <Code className="w-5 h-5 mr-2" />
                 View Smart Contract
