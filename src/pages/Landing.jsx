@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { 
   BookOpen, 
   Shield, 
@@ -20,6 +20,7 @@ import { useAuth } from '@/contexts/AuthContext'
 
 const Landing = () => {
   const { isAuthenticated, user } = useAuth()
+  const navigate = useNavigate()
   const [activeStep, setActiveStep] = useState(0)
 
   const features = [
@@ -95,15 +96,17 @@ const Landing = () => {
                   </Button>
                 </Link>
               ) : (
-                <Link to="/auth?mode=register">
-                  <Button 
-                    size="lg" 
-                    className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-200"
-                  >
-                    <UserPlusIcon className="w-5 h-5 mr-2" />
-                    Get Started Free+
-                  </Button>
-                </Link>
+                <Button 
+                  size="lg" 
+                  className="text-lg px-8 py-4 shadow-lg hover:shadow-xl transition-all duration-200"
+                  onClick={() => {
+                    navigate('/auth?mode=register')
+                    setTimeout(() => window.scrollTo(0, 0), 100)
+                  }}
+                >
+                  <UserPlusIcon className="w-5 h-5 mr-2" />
+                  Get Started Free+
+                </Button>
               )}
               
               {isAuthenticated ? (
@@ -118,16 +121,18 @@ const Landing = () => {
                   </Button>
                 </Link>
               ) : (
-                <Link to="/auth?mode=login">
-                  <Button 
-                    variant="outline" 
-                    size="lg" 
-                    className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 hover:border-white/50 shadow-lg"
-                  >
-                    <Trophy className="w-5 h-5 mr-2" />
-                    Sign In
-                  </Button>
-                </Link>
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 hover:border-white/50 shadow-lg"
+                  onClick={() => {
+                    navigate('/auth?mode=login')
+                    setTimeout(() => window.scrollTo(0, 0), 100)
+                  }}
+                >
+                  <Trophy className="w-5 h-5 mr-2" />
+                  Sign In
+                </Button>
               )}
             </div>
 
@@ -324,12 +329,16 @@ const Landing = () => {
                   </Button>
                 </Link>
               ) : (
-                <Link to="/auth?mode=register">
-                  <Button className="whitespace-nowrap">
-                    Start Learning
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
+                <Button 
+                  className="whitespace-nowrap"
+                  onClick={() => {
+                    navigate('/auth?mode=register')
+                    setTimeout(() => window.scrollTo(0, 0), 100)
+                  }}
+                >
+                  Start Learning
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
               )}
             </div>
           </motion.div>
@@ -429,11 +438,15 @@ const Landing = () => {
                                 ✅ Account Created
                               </Button>
                             ) : (
-                              <Link to="/auth?mode=register">
-                                <Button size="sm">
-                                  {step.action}
-                                </Button>
-                              </Link>
+                              <Button 
+                                size="sm"
+                                onClick={() => {
+                                  navigate('/auth?mode=register')
+                                  setTimeout(() => window.scrollTo(0, 0), 100)
+                                }}
+                              >
+                                {step.action}
+                              </Button>
                             )
                           )}
                           {index === 1 && (
@@ -514,25 +527,29 @@ const Landing = () => {
                 </>
               ) : (
                 <>
-                  <Link to="/auth?mode=register">
-                    <Button
-                      size="lg"
-                      variant="secondary"
-                      className="text-lg px-8 py-4"
-                    >
-                      <UserPlusIcon className="w-5 h-5 mr-2" />
-                      Get Started Free
-                    </Button>
-                  </Link>
-                  <Link to="/auth?mode=login">
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
-                    >
-                      Sign In
-                    </Button>
-                  </Link>
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    className="text-lg px-8 py-4"
+                    onClick={() => {
+                      navigate('/auth?mode=register')
+                      setTimeout(() => window.scrollTo(0, 0), 100)
+                    }}
+                  >
+                    <UserPlusIcon className="w-5 h-5 mr-2" />
+                    Get Started Free
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-lg px-8 py-4 bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30"
+                    onClick={() => {
+                      navigate('/auth?mode=login')
+                      setTimeout(() => window.scrollTo(0, 0), 100)
+                    }}
+                  >
+                    Sign In
+                  </Button>
                 </>
               )}
             </div>
