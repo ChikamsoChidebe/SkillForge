@@ -28,6 +28,7 @@ import DemoShowcase from '@/components/organisms/DemoShowcase'
 import PartnershipSection from '@/components/organisms/PartnershipSection'
 import HederaServicesShowcase from '@/components/organisms/HederaServicesShowcase'
 import LiveHederaData from '@/components/organisms/LiveHederaData'
+import GoogleAuthShowcase from '@/components/organisms/GoogleAuthShowcase'
 
 const Landing = () => {
   const { isAuthenticated, user } = useAuth()

@@ -3,6 +3,7 @@ import { toast } from 'react-hot-toast'
 import { reliableSync } from '@/api/reliableSync'
 import { realEmailService } from '@/api/realEmailService'
 import { supabaseService } from '@/api/supabaseClient'
+import { googleAuthService } from '@/api/googleAuthService'
 
 const AuthContext = createContext()
 
@@ -254,6 +255,146 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // Google OAuth login/register
+  const googleAuth = async (googleData, mode = 'login') => {
+    try {
+      setIsLoading(true)
+      console.log('🔍 Google Auth called:', { email: googleData.email, mode })
+      
+      // Check if user exists
+      let existingUser = null
+      
+      // Check Supabase first
+      try {
+        existingUser = await supabaseService.getUserByEmail(googleData.email)
+        console.log('✅ Found user in Supabase:', !!existingUser)
+      } catch (error) {
+        console.log('⚠️ Supabase check failed, checking localStorage')
+      }
+      
+      // Check localStorage if not found in Supabase
+      if (!existingUser) {
+        const users = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
+        existingUser = users.find(u => u.email === googleData.email)
+        console.log('✅ Found user in localStorage:', !!existingUser)
+      }
+      
+      if (existingUser && mode === 'register') {
+        // User exists, switch to login mode
+        console.log('🔄 User exists, switching to login mode')
+        mode = 'login'
+      }
+      
+      let user = existingUser
+      
+      if (!existingUser) {
+        // Create new user from Google data
+        console.log('👤 Creating new user from Google data')
+        
+        // Generate username from email
+        const baseUsername = googleData.email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+        let username = baseUsername
+        
+        // Ensure username is unique
+        const existingUsers = JSON.parse(localStorage.getItem('skillforge_users') || '[]')
+        let counter = 1
+        while (existingUsers.find(u => u.username === username)) {
+          username = `${baseUsername}${counter}`
+          counter++
+        }
+        
+        // Check wallet connection
+        const existingWalletData = localStorage.getItem('skillforge_wallet_data')
+        let walletInfo = null
+        if (existingWalletData) {
+          try {
+            walletInfo = JSON.parse(existingWalletData)
+          } catch (e) {
+            localStorage.removeItem('skillforge_wallet_data')
+          }
+        }
+        
+        user = {
+          id: `google_${googleData.sub}_${Date.now()}`,
+          username,
+          email: googleData.email,
+          fullName: googleData.name,
+          avatar: googleData.picture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
+          createdAt: new Date().toISOString(),
+          totalEntries: 0,
+          totalBadges: 0,
+          learningStreak: 0,
+          lastEntryDate: null,
+          googleId: googleData.sub,
+          emailVerified: googleData.email_verified,
+          authProvider: 'google',
+          walletConnected: !!walletInfo,
+          hederaAccountId: walletInfo?.hederaAccountId || null,
+          connectionType: walletInfo?.connectionType || null,
+          preferences: {
+            theme: 'system',
+            notifications: true,
+            publicProfile: true
+          }
+        }
+        
+        // Create user with reliable sync
+        await reliableSync.createUser(user)
+        
+        // Send welcome email
+        if (user.email) {
+          realEmailService.sendWelcomeEmail(user)
+        }
+        
+        // Clear temporary wallet data
+        if (walletInfo) {
+          localStorage.removeItem('skillforge_wallet_data')
+        }
+        
+        toast.success(`Welcome to SkillForge, ${user.fullName}! 🎉`)
+      } else {
+        // Update existing user with latest Google data
+        const updatedUser = {
+          ...existingUser,
+          fullName: googleData.name || existingUser.fullName,
+          avatar: googleData.picture || existingUser.avatar,
+          emailVerified: googleData.email_verified || existingUser.emailVerified,
+          lastLoginAt: new Date().toISOString()
+        }
+        
+        // Update in database
+        await reliableSync.updateUser(updatedUser.id, {
+          fullName: updatedUser.fullName,
+          avatar: updatedUser.avatar,
+          emailVerified: updatedUser.emailVerified,
+          lastLoginAt: updatedUser.lastLoginAt
+        })
+        
+        user = updatedUser
+        toast.success(`Welcome back, ${user.fullName}! 🎉`)
+      }
+      
+      // Set authentication state
+      localStorage.setItem('skillforge_user', JSON.stringify(user))
+      setUser(user)
+      setIsAuthenticated(true)
+      
+      console.log('✅ Google authentication successful')
+      return { 
+        success: true, 
+        user,
+        isNewUser: !existingUser,
+        needsWalletConnection: !user.walletConnected
+      }
+    } catch (error) {
+      console.error('❌ Google authentication failed:', error)
+      toast.error('Google sign-in failed. Please try again.')
+      return { success: false, error: error.message }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const value = {
     user,
     isAuthenticated,
@@ -261,7 +402,8 @@ export const AuthProvider = ({ children }) => {
     register,
     login,
     logout,
-    updateUser
+    updateUser,
+    googleAuth
   }
 
   return (

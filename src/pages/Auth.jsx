@@ -27,11 +27,12 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { toast } from 'react-hot-toast'
+import GoogleSignInButton from '@/components/atoms/GoogleSignInButton'
 
 const Auth = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { login, register, isAuthenticated } = useAuth()
+  const { login, register, googleAuth, isAuthenticated } = useAuth()
   const { theme, toggleTheme } = useTheme()
   
   const [mode, setMode] = useState(searchParams.get('mode') || 'login')
@@ -108,6 +109,31 @@ const Auth = () => {
       ...prev,
       [e.target.name]: e.target.value
     }))
+  }
+
+  const handleGoogleSuccess = async (googleData) => {
+    try {
+      setIsLoading(true)
+      const result = await googleAuth(googleData, mode)
+      
+      if (result.success) {
+        if (result.needsWalletConnection) {
+          toast.success('Account ready! Connect your wallet to continue.')
+          navigate('/wallet-connect')
+        } else {
+          navigate('/dashboard')
+        }
+      }
+    } catch (error) {
+      toast.error('Google sign-in failed. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleGoogleError = (error) => {
+    console.error('Google auth error:', error)
+    toast.error('Google sign-in failed. Please try again.')
   }
 
   return (
@@ -333,7 +359,7 @@ const Auth = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4"
+              className="flex flex-wrap justify-center gap-4"
             >
               {[
                 { icon: Shield, label: 'Secure', color: 'from-green-500 to-emerald-500' },
@@ -444,6 +470,30 @@ const Auth = () => {
                   >
                     Sign Up
                   </button>
+                </div>
+              </div>
+
+              {/* Google Sign-In */}
+              <div className="space-y-4">
+                <GoogleSignInButton
+                  mode={mode}
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  disabled={isLoading}
+                  size="large"
+                  className="w-full"
+                />
+                
+                {/* Divider */}
+                <div className="relative flex items-center justify-center my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+                  </div>
+                  <div className="relative bg-white dark:bg-gray-900 px-4">
+                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                      Or continue with email
+                    </span>
+                  </div>
                 </div>
               </div>
 

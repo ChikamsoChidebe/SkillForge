@@ -1,0 +1,55 @@
+/* Mobile-First Responsive Design */
+
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+@media (max-width: 640px) {
+  .container-mobile {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .btn-mobile {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0.75rem;
+    min-height: 44px;
+  }
+  
+  .nav-mobile {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    padding: 0.5rem 1rem;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  button, .btn, .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .active\\:scale-95:active {
+    transform: scale(0.95);
+  }
+}

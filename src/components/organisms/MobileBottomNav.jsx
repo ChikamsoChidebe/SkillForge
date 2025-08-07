@@ -30,7 +30,7 @@ const MobileBottomNav = () => {
 
   const authenticatedNavItems = [
     { icon: Home, label: 'Dashboard', path: '/dashboard', activeRoutes: ['/dashboard'] },
-    { icon: TrendingUp, label: 'FinanceAI', path: '/financial-modeling', activeRoutes: ['/financial-modeling'] },
+    { icon: Bot, label: 'AI Coach', path: '/ai-coach', activeRoutes: ['/ai-coach'] },
     { icon: Trophy, label: 'Badges', path: '/badge-gallery', activeRoutes: ['/badge-gallery', '/badges'] },
     { icon: BookOpen, label: 'Courses', path: '/courses', activeRoutes: ['/courses'] },
     { icon: User, label: 'Profile', path: '/profile', activeRoutes: ['/profile', '/settings'] }
