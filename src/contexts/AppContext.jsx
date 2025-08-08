@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer, useEffect } from 'react'
 import { hederaClient } from '@/api/hederaClient'
+import { walletService } from '@/services/walletService'
 
 const AppContext = createContext()
 
@@ -48,12 +49,23 @@ function appReducer(state, action) {
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(appReducer, initialState)
 
-  const connectWallet = async () => {
+  const connectWallet = async (walletId) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true })
-      const walletData = await hederaClient.connectWallet()
-      dispatch({ type: 'SET_USER', payload: walletData })
-      return walletData
+      const result = await walletService.connectWallet(walletId)
+      
+      if (result.success) {
+        const walletData = {
+          accountId: result.accountId,
+          walletId: result.walletId,
+          connected: true,
+          connectedAt: new Date().toISOString()
+        }
+        dispatch({ type: 'SET_USER', payload: walletData })
+        return walletData
+      } else {
+        throw new Error(result.error)
+      }
     } catch (error) {
       console.error('Failed to connect wallet:', error)
       throw error

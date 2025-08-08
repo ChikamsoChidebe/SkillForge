@@ -79,14 +79,9 @@ const Auth = () => {
         const result = await register(formData)
         
         if (result.success) {
-          // Professional flow: Check if wallet connection is needed
-          if (result.needsWalletConnection) {
-            toast.success('Account created! Please connect your wallet to continue.')
-            navigate('/wallet-connect')
-          } else {
-            toast.success('Account created successfully! Wallet already connected.')
-            navigate('/dashboard')
-          }
+          // New users always go to dashboard after registration
+          toast.success('Account created successfully!')
+          navigate('/dashboard')
         }
       } else {
         const result = await login({
@@ -117,12 +112,8 @@ const Auth = () => {
       const result = await googleAuth(googleData, mode)
       
       if (result.success) {
-        if (result.needsWalletConnection) {
-          toast.success('Account ready! Connect your wallet to continue.')
-          navigate('/wallet-connect')
-        } else {
-          navigate('/dashboard')
-        }
+        // New Google users go to dashboard, existing users go to dashboard
+        navigate('/dashboard')
       }
     } catch (error) {
       toast.error('Google sign-in failed. Please try again.')

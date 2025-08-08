@@ -1,89 +1,135 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link, useNavigate } from 'react-router-dom'
-import { Wallet, Shield, CheckCircle, ArrowRight, ExternalLink, User } from 'lucide-react'
+import { Wallet, Shield, CheckCircle, ArrowRight, ExternalLink, User, Loader2 } from 'lucide-react'
 import Button from '@/components/atoms/Button'
 import Card from '@/components/atoms/Card'
+import Modal from '@/components/molecules/Modal'
+import WalletSelector from '@/components/organisms/WalletSelector'
 import { useAuth } from '@/contexts/AuthContext'
-import { useApp } from '@/contexts/AppContext'
-import { toast } from 'react-hot-toast'
+import { walletService } from '@/services/walletService'
+import toast from 'react-hot-toast'
 
 const WalletConnect = () => {
   const navigate = useNavigate()
   const { user, updateUser } = useAuth()
-  const { connectWallet, isLoading } = useApp()
   const [isConnecting, setIsConnecting] = useState(false)
+  const [showWalletSelector, setShowWalletSelector] = useState(false)
   const [showManualInput, setShowManualInput] = useState(false)
   const [manualAccountId, setManualAccountId] = useState('')
+  const [connectionStatus, setConnectionStatus] = useState(null)
 
-  const handleConnectWallet = async () => {
-    setIsConnecting(true)
-    try {
-      const walletData = await connectWallet()
-      
-      if (user) {
-        // User is already logged in, update their profile
-        updateUser({ 
-          ...user, 
-          walletConnected: true,
-          hederaAccountId: walletData.accountId,
-          connectionType: 'wallet'
-        })
-        toast.success('Wallet connected successfully!')
-        navigate('/dashboard')
-      } else {
-        // User not logged in, store wallet data temporarily
-        const tempWalletData = {
-          hederaAccountId: walletData.accountId,
-          connectionType: 'wallet',
-          connectedAt: new Date().toISOString()
-        }
-        localStorage.setItem('skillforge_wallet_data', JSON.stringify(tempWalletData))
-        toast.success('Wallet connected! Please create an account or sign in to continue.')
-        navigate('/auth?mode=register')
-      }
-    } catch (error) {
-      console.error('Wallet connection failed:', error)
-      toast.error('Wallet connection failed. Try manual input or demo mode.')
-      setShowManualInput(true)
-    } finally {
-      setIsConnecting(false)
+  useEffect(() => {
+    checkExistingConnection()
+  }, [])
+
+  const checkExistingConnection = async () => {
+    const status = walletService.getConnectionStatus()
+    console.log('🔍 Checking wallet connection status:', status)
+    setConnectionStatus(status)
+    
+    if (status.connected && user) {
+      // User already has wallet connected, update user data
+      updateUser({ 
+        ...user, 
+        walletConnected: true,
+        hederaAccountId: status.accountId,
+        connectionType: 'wallet'
+      })
     }
   }
 
-  const handleManualConnect = () => {
+  const handleWalletConnect = (walletData) => {
+    if (user) {
+      // User is already logged in, update their profile and go to wallet dashboard
+      updateUser({ 
+        ...user, 
+        walletConnected: true,
+        hederaAccountId: walletData.accountId,
+        connectionType: 'wallet'
+      })
+      toast.success('Wallet connected successfully!')
+      navigate('/wallet-dashboard')
+    } else {
+      // User not logged in, store wallet data temporarily
+      const tempWalletData = {
+        hederaAccountId: walletData.accountId,
+        connectionType: 'wallet',
+        connectedAt: new Date().toISOString()
+      }
+      localStorage.setItem('skillforge_wallet_data', JSON.stringify(tempWalletData))
+      toast.success('Wallet connected! Please create an account or sign in to continue.')
+      navigate('/auth?mode=register')
+    }
+    setShowWalletSelector(false)
+  }
+
+  const handleDisconnectWallet = async () => {
+    try {
+      await walletService.disconnectWallet()
+      
+      if (user) {
+        updateUser({ 
+          ...user, 
+          walletConnected: false,
+          hederaAccountId: null,
+          connectionType: null
+        })
+      }
+      
+      setConnectionStatus({ connected: false })
+      toast.success('Wallet disconnected successfully')
+    } catch (error) {
+      console.error('Disconnect failed:', error)
+      toast.error('Failed to disconnect wallet')
+    }
+  }
+
+  const handleManualConnect = async () => {
     if (!manualAccountId.trim()) {
       toast.error('Please enter a valid Hedera Account ID')
       return
     }
     
-    // Validate account ID format (0.0.xxxxx)
-    const accountIdRegex = /^0\.0\.[0-9]+$/
-    if (!accountIdRegex.test(manualAccountId.trim())) {
-      toast.error('Invalid format. Use format: 0.0.12345')
-      return
-    }
-    
-    if (user) {
-      // User is already logged in, update their profile
-      updateUser({ 
-        ...user, 
-        walletConnected: true,
-        hederaAccountId: manualAccountId.trim(),
-        connectionType: 'manual'
-      })
-      toast.success('Account connected successfully!')
-      navigate('/dashboard')
-    } else {
-      // User not logged in, store wallet data temporarily
-      const tempWalletData = {
-        hederaAccountId: manualAccountId.trim(),
-        connectionType: 'manual',
-        connectedAt: new Date().toISOString()
+    try {
+      // Use walletService to connect manual account
+      const result = await walletService.connectManualAccount(manualAccountId.trim())
+      
+      if (result.success) {
+        if (user) {
+          // User is already logged in, update their profile and go to wallet dashboard
+          updateUser({ 
+            ...user, 
+            walletConnected: true,
+            hederaAccountId: result.accountId,
+            connectionType: 'manual'
+          })
+          toast.success('Account connected successfully!')
+          navigate('/wallet-dashboard')
+        } else {
+          // User not logged in, store wallet data temporarily
+          const tempWalletData = {
+            hederaAccountId: result.accountId,
+            connectionType: 'manual',
+            connectedAt: new Date().toISOString()
+          }
+          localStorage.setItem('skillforge_wallet_data', JSON.stringify(tempWalletData))
+          toast.success('Account connected! Please create an account or sign in to continue.')
+          navigate('/auth?mode=register')
+        }
+        
+        // Update connection status
+        setConnectionStatus({
+          connected: true,
+          accountId: result.accountId,
+          walletId: 'manual',
+          connectedAt: new Date().toISOString()
+        })
+      } else {
+        toast.error(result.error)
       }
-      localStorage.setItem('skillforge_wallet_data', JSON.stringify(tempWalletData))
-      toast.success('Account connected! Please create an account or sign in to continue.')
-      navigate('/auth?mode=register')
+    } catch (error) {
+      toast.error('Failed to connect account: ' + error.message)
     }
   }
 
@@ -137,11 +183,48 @@ const WalletConnect = () => {
           </div>
 
           <div className="space-y-4">
-            {!showManualInput ? (
+            {connectionStatus?.connected ? (
+              <>
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                  <div className="flex items-center space-x-3">
+                    <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                    <div>
+                      <h4 className="font-semibold text-green-800 dark:text-green-200">
+                        Wallet Connected
+                      </h4>
+                      <p className="text-sm text-green-600 dark:text-green-300">
+                        {connectionStatus.accountId} • {connectionStatus.walletId}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex space-x-3">
+                  <Button
+                    onClick={() => {
+                      console.log('🔍 Continue clicked - User:', !!user, 'Connection:', connectionStatus)
+                      toast.success('Navigating to wallet dashboard...')
+                      navigate('/wallet-dashboard')
+                    }}
+                    className="flex-1 bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 text-lg font-semibold"
+                  >
+                    <ArrowRight className="w-5 h-5 mr-2" />
+                    Continue
+                  </Button>
+                  
+                  <Button
+                    variant="outline"
+                    onClick={handleDisconnectWallet}
+                    className="px-4"
+                  >
+                    Disconnect
+                  </Button>
+                </div>
+              </>
+            ) : !showManualInput ? (
               <>
                 <Button
-                  onClick={handleConnectWallet}
-                  loading={isConnecting}
+                  onClick={() => setShowWalletSelector(true)}
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 text-lg font-semibold"
                 >
                   <Wallet className="w-5 h-5 mr-2" />
@@ -211,14 +294,27 @@ const WalletConnect = () => {
           {user && (
             <div className="mt-6 text-center">
               <Link 
-                to="/dashboard" 
+                to="/wallet-dashboard" 
                 className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 transition-colors"
               >
-                Skip for now →
+                Go to Wallet Dashboard →
               </Link>
             </div>
           )}
         </Card>
+
+        {/* Wallet Selector Modal */}
+        <Modal
+          isOpen={showWalletSelector}
+          onClose={() => setShowWalletSelector(false)}
+          title="Connect Wallet"
+          size="lg"
+        >
+          <WalletSelector
+            onConnect={handleWalletConnect}
+            onCancel={() => setShowWalletSelector(false)}
+          />
+        </Modal>
 
         <div className="mt-6 text-center space-y-3">
           <a

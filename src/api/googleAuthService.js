@@ -286,12 +286,13 @@ class GoogleAuthService {
           })
         } else {
           // Initialize and try again
-          await this.initialize()
-          if (window.google?.accounts?.id) {
-            window.google.accounts.id.prompt()
-          } else {
-            reject(new Error('Google services not available'))
-          }
+          this.initialize().then(() => {
+            if (window.google?.accounts?.id) {
+              window.google.accounts.id.prompt()
+            } else {
+              reject(new Error('Google services not available'))
+            }
+          }).catch(reject)
         }
       } catch (error) {
         reject(error)

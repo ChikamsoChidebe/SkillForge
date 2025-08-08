@@ -13,6 +13,7 @@ import {
   TrendingUp
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import SmartWalletLink from '@/components/molecules/SmartWalletLink'
 
 const MobileBottomNav = () => {
   const location = useLocation()
@@ -32,7 +33,7 @@ const MobileBottomNav = () => {
     { icon: Home, label: 'Dashboard', path: '/dashboard', activeRoutes: ['/dashboard'] },
     { icon: Bot, label: 'AI Coach', path: '/ai-coach', activeRoutes: ['/ai-coach'] },
     { icon: Trophy, label: 'Badges', path: '/badge-gallery', activeRoutes: ['/badge-gallery', '/badges'] },
-    { icon: BookOpen, label: 'Courses', path: '/courses', activeRoutes: ['/courses'] },
+    { icon: Wallet, label: 'Wallet', path: 'smart-wallet', activeRoutes: ['/wallet-dashboard', '/wallet-connect'], isSmartWallet: true },
     { icon: User, label: 'Profile', path: '/profile', activeRoutes: ['/profile', '/settings'] }
   ]
 
@@ -61,6 +62,51 @@ const MobileBottomNav = () => {
               location.pathname === route || location.pathname.startsWith(route + '/')
             )
             const Icon = item.icon
+            
+            if (item.isSmartWallet) {
+              return (
+                <SmartWalletLink
+                  key={item.path}
+                  className={`flex flex-col items-center justify-center p-2 rounded-xl transition-all duration-300 min-w-[60px] ${
+                    isActive 
+                      ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' 
+                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/30'
+                  }`}
+                >
+                  <motion.div
+                    whileTap={{ scale: 0.95 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex flex-col items-center justify-center"
+                  >
+                    <div className={`relative ${isActive ? 'transform -translate-y-0.5' : ''}`}>
+                      <Icon 
+                        size={22} 
+                        className={`transition-all duration-300 ${
+                          isActive ? 'scale-110 drop-shadow-sm' : 'scale-100'
+                        }`}
+                        strokeWidth={isActive ? 2.5 : 2}
+                      />
+                      {isActive && (
+                        <motion.div
+                          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full shadow-sm"
+                          layoutId="activeIndicator"
+                          transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                        />
+                      )}
+                    </div>
+                    <span className={`text-xs mt-1 font-medium transition-all duration-300 ${
+                      isActive 
+                        ? 'text-blue-600 dark:text-blue-400 scale-105 font-semibold' 
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      {item.label}
+                    </span>
+                  </motion.div>
+                </SmartWalletLink>
+              )
+            }
             
             return (
               <motion.button

@@ -195,7 +195,7 @@ export const AuthProvider = ({ children }) => {
       setUser(user)
       setIsAuthenticated(true)
       
-      // Sync user profile from Supabase in background
+      // Sync user profile from Supabase in background (optional)
       setTimeout(async () => {
         try {
           const profileData = await supabaseService.getUserProfile(user.id)
@@ -206,7 +206,8 @@ export const AuthProvider = ({ children }) => {
             console.log('✅ User profile synced from Supabase')
           }
         } catch (err) {
-          console.log('Background profile sync failed:', err.message)
+          console.log('⚠️ Background profile sync failed (this is optional):', err.message)
+          // This is optional - app works fine without Supabase sync
         }
       }, 1000)
       
@@ -231,10 +232,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser = async (updates) => {
     try {
-      // Update user in Supabase
-      await supabaseService.updateUser(user.id, updates)
-      
-      // Update local user state
+      // Update local user state first (always works)
       const updatedUser = { ...user, ...updates }
       
       // Update in users list
@@ -249,7 +247,14 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('skillforge_user', JSON.stringify(updatedUser))
       setUser(updatedUser)
       
-      console.log('✅ User updated successfully in Supabase and locally')
+      // Try to update in Supabase (optional)
+      try {
+        await supabaseService.updateUser(user.id, updates)
+        console.log('✅ User updated in both local storage and Supabase')
+      } catch (supabaseError) {
+        console.log('⚠️ Supabase update failed (local update successful):', supabaseError.message)
+      }
+      
     } catch (error) {
       console.error('⚠️ Failed to update user:', error)
     }

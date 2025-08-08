@@ -177,10 +177,10 @@ const Dashboard = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Learning Dashboard
+            Blockchain Learning Dashboard
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
-            Track your progress and celebrate your achievements
+            Track your progress with Hedera-verified achievements and NFT badges
           </p>
         </div>
         
@@ -205,11 +205,11 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Statistics Cards */}
+      {/* Statistics Cards - Hackathon Winning Metrics */}
       <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
         {[
           {
-            label: 'Total Entries',
+            label: 'Blockchain Entries',
             value: stats.totalEntries,
             icon: BookOpen,
             color: 'blue',
@@ -223,7 +223,7 @@ const Dashboard = () => {
             change: 'Keep it up!'
           },
           {
-            label: 'Badges Earned',
+            label: 'NFT Badges',
             value: stats.unlockedBadges,
             icon: Trophy,
             color: 'yellow',

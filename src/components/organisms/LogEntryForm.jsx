@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useApp } from '@/contexts/AppContext'
 import { supabaseService } from '@/api/supabaseClient'
 import { realEmailService } from '@/api/realEmailService'
+import { userActivityService } from '@/services/userActivityService'
 import { toast } from 'react-hot-toast'
 
 const LogEntryForm = ({ onSuccess, user: propUser }) => {
@@ -45,6 +46,14 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
         date: new Date(formData.date).toISOString()
       }
 
+      // Save using userActivityService to update all pages
+      const accountId = '0.0.6478142' // Use consistent account ID
+      userActivityService.addLearningEntry(accountId, {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category
+      })
+      
       // Save to Supabase for cross-device sync
       try {
         await supabaseService.createEntry(entryData)
@@ -84,6 +93,11 @@ const LogEntryForm = ({ onSuccess, user: propUser }) => {
       } else {
         toast.success('✅ Entry saved across all devices!')
       }
+      
+      // Force refresh of all pages by dispatching event
+      window.dispatchEvent(new CustomEvent('userActivityChanged', { 
+        detail: { accountId: '0.0.6478142' } 
+      }))
       
       // Check for badge unlock
       const badgeUnlocked = checkBadgeUnlock(newTotalEntries)

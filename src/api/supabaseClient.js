@@ -10,7 +10,11 @@ if (!supabaseUrl || !supabaseKey) {
   })
 }
 
-export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
+export const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: false
+  }
+}) : null
 
 export const supabaseService = {
   // Create user with improved error handling
@@ -130,17 +134,24 @@ export const supabaseService = {
 
   // Get full user profile with stats
   async getUserProfile(userId) {
+    if (!supabase) {
+      console.warn('⚠️ Supabase not configured')
+      return null
+    }
+
     try {
       const { data, error } = await supabase
         .from('users')
         .select('*')
         .eq('id', userId)
-        .single()
+        .maybeSingle()
       
-      if (error && error.code !== 'PGRST116') throw error
+      if (error) {
+        console.error('❌ Supabase getUserProfile error:', error)
+        return null
+      }
       
       if (data) {
-        // Map database fields to frontend format
         return {
           ...data,
           totalEntries: data.total_entries || 0,
@@ -152,7 +163,7 @@ export const supabaseService = {
       
       return null
     } catch (error) {
-      console.error('Supabase get user profile error:', error)
+      console.error('⚠️ Supabase getUserProfile failed:', error.message)
       return null
     }
   },

@@ -20,6 +20,7 @@ import {
   TrendingUp
 } from 'lucide-react'
 import Button from '@/components/atoms/Button'
+import SmartWalletLink from '@/components/molecules/SmartWalletLink'
 import { useApp } from '@/contexts/AppContext'
 import { useTheme } from '@/contexts/ThemeContext'
 import { useAuth } from '@/contexts/AuthContext'
@@ -44,10 +45,10 @@ const Navbar = () => {
   const privateNavigation = [
     { name: 'Home', href: '/', icon: Home },
     { name: 'Dashboard', href: '/dashboard', icon: BookOpen },
+    { name: 'Wallet', href: 'smart-wallet', icon: Wallet, isSmartWallet: true },
     { name: 'Badges', href: '/badges', icon: Award },
     { name: 'Courses', href: '/courses', icon: BookOpen },
     { name: 'AI Coach', href: '/ai-coach', icon: Brain },
-    { name: 'FinanceAI', href: '/financial-modeling', icon: TrendingUp },
     { name: 'About', href: '/about', icon: Info },
     { name: 'Profile', href: '/profile', icon: User },
   ]
@@ -90,6 +91,22 @@ const Navbar = () => {
                     <Icon className="w-4 h-4" />
                     <span>{item.name}</span>
                   </a>
+                )
+              }
+              
+              if (item.isSmartWallet) {
+                return (
+                  <SmartWalletLink
+                    key={item.name}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive('/wallet-dashboard') || isActive('/wallet-connect')
+                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span>{item.name}</span>
+                  </SmartWalletLink>
                 )
               }
               
@@ -236,6 +253,43 @@ const Navbar = () => {
                         </div>
                         <span className="font-medium text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">{item.name}</span>
                       </motion.a>
+                    )
+                  }
+                  
+                  if (item.isSmartWallet) {
+                    return (
+                      <motion.div
+                        key={item.name}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <SmartWalletLink
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className={`flex items-center space-x-3 p-4 rounded-xl transition-colors group ${
+                            isActive('/wallet-dashboard') || isActive('/wallet-connect')
+                              ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                              : 'bg-gray-50 dark:bg-gray-800/50 hover:bg-blue-50 dark:hover:bg-blue-900/20'
+                          }`}
+                        >
+                          <div className={`w-10 h-10 rounded-lg shadow-sm flex items-center justify-center transition-colors ${
+                            isActive('/wallet-dashboard') || isActive('/wallet-connect')
+                              ? 'bg-white/20'
+                              : 'bg-white dark:bg-gray-700 group-hover:bg-blue-100 dark:group-hover:bg-blue-800/30'
+                          }`}>
+                            <Icon className={`w-5 h-5 ${
+                              isActive('/wallet-dashboard') || isActive('/wallet-connect')
+                                ? 'text-white'
+                                : 'text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                            }`} />
+                          </div>
+                          <span className={`font-medium ${
+                            isActive('/wallet-dashboard') || isActive('/wallet-connect')
+                              ? 'text-white'
+                              : 'text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+                          }`}>{item.name}</span>
+                        </SmartWalletLink>
+                      </motion.div>
                     )
                   }
                   

@@ -26,6 +26,8 @@ import TermsOfService from '@/pages/TermsOfService'
 import Landing from '@/pages/Landing'
 import Auth from '@/pages/Auth'
 import WalletConnect from '@/pages/WalletConnect'
+import WalletDashboard from '@/pages/WalletDashboard'
+import DemoActivity from '@/pages/DemoActivity'
 import AICoach from '@/pages/AICoach'
 import Courses from '@/pages/Courses'
 import CourseDetail from '@/pages/CourseDetail'
@@ -70,6 +72,8 @@ function AppContent() {
             <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/wallet-connect" element={<WalletConnect />} />
+            <Route path="/wallet-dashboard" element={<ProtectedRoute><WalletDashboard /></ProtectedRoute>} />
+            <Route path="/demo-activity" element={<DemoActivity />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/log-entry" element={<ProtectedRoute><LogEntry /></ProtectedRoute>} />
             <Route path="/courses" element={<Courses />} />
